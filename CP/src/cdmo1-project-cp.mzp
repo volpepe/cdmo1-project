@@ -4,9 +4,9 @@
     ],
     "openTab": 0,
     "projectFiles": [
-        "VLSI-model.mzn"
+        "VLSI-model.mzn",
+        "solvers/chuffed_42_5min.mpc"
     ],
-    "selectedBuiltinConfigId": "org.gecode.gecode",
-    "selectedBuiltinConfigVersion": "6.3.0",
+    "selectedSolverConfigFile": "solvers/chuffed_42_5min.mpc",
     "version": 106
 }

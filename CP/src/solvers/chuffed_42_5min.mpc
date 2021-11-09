@@ -1,0 +1,7 @@
+{
+    "-O": 1,
+    "intermediate-solutions": true,
+    "random-seed": "42",
+    "solver": "org.chuffed.chuffed@0.10.4",
+    "time-limit": 300000
+}
