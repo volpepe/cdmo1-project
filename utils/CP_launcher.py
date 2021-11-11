@@ -15,7 +15,7 @@ def parse_args():
         default="CP/src/VLSI-model.mzn")
     argpars.add_argument('--solver', '-s',
         type=str, help="Path to the solver to use (solver config file (.msc) or 'gecode'/'chuffed')",
-        default="gecode")
+        default="chuffed")
     argpars.add_argument("--problems", "-p", type=str,
         help="Pattern to gather all instances to be solved",
         default="utils/samples/ins-sample.txt")
@@ -47,8 +47,8 @@ def get_problem_filenames(pattern:str) -> Sequence[str]:
 def get_problem_instance(fn:str) -> ProblemInstance:
     return parse_problem_file(fn)
 
-def get_output_filename(input_fn:str) -> str:
-    return input_fn.replace("ins", "out")
+def get_output_filename(output_path: str, input_fn:str) -> str:
+    return os.path.join(output_path, input_fn.split(os.sep)[-1].replace("ins", "out"))
 
 def solve_instance(mz_instance, filename=None, verbose=False) -> SolutionInstance:
     # Solve
@@ -57,10 +57,11 @@ def solve_instance(mz_instance, filename=None, verbose=False) -> SolutionInstanc
         print("Solving problem {}...".format(filename))
         print()
     start_time = datetime.now()
-    result = mz_instance.solve(timeout=timedelta(minutes=5))
+    result = mz_instance.solve(timeout=timedelta(minutes=5), random_seed=42,
+        optimisation_level=1)
     end_time = datetime.now()
     if result is None:
-        print("Unfeasible after {} seconds".format((end_time-start_time).seconds))
+        print("Unfeasible after {} seconds".format((end_time-start_time).seconds*1e-6))
         raise UnfeasibleException()
     if verbose:
         print("Solving took {} s".format((end_time-start_time).microseconds*1e-6))
@@ -83,8 +84,6 @@ if __name__ == '__main__':
     model = load_model(args.model)
     # Find the MiniZinc solver configuration for Gecode
     solver = load_solver(args.solver)
-    # Create an instance of the MiniZinc
-    mz_instance = create_minizinc_instance(solver, model)
     # Load sample problem instance
     pattern = args.problems
     problem_filenames = get_problem_filenames(pattern)
@@ -93,6 +92,9 @@ if __name__ == '__main__':
 
     # Iterate over instances
     for filename in problem_filenames:
+        # Create an instance of the MiniZinc
+        mz_instance = create_minizinc_instance(solver, model)
+
         problem = get_problem_instance(filename)
 
         # Assign variables
@@ -104,7 +106,7 @@ if __name__ == '__main__':
             solution = solve_instance(mz_instance, filename, verbose=True)
             solved_problems += 1
 
-            out_filename = get_output_filename(filename)
+            out_filename = get_output_filename(args.output_dir, filename)
             solution.write_to_file(out_filename)
 
             if args.show:
