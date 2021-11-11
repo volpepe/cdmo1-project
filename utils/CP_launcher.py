@@ -63,7 +63,7 @@ def solve_instance(mz_instance, filename=None, verbose=False) -> SolutionInstanc
         print("Unfeasible after {} seconds".format((end_time-start_time).seconds))
         raise UnfeasibleException()
     if verbose:
-        print("Solving took {} s".format((end_time-start_time).seconds))
+        print("Solving took {} s".format((end_time-start_time).microseconds*1e-6))
         print("h: {}".format(result['h']))
         print("x: {}".format(result['x_positions']))
         print("y: {}".format(result['y_positions']))
