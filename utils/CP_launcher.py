@@ -15,7 +15,7 @@ def parse_args():
         default="CP/src/VLSI-model.mzn")
     argpars.add_argument('--solver', '-s',
         type=str, help="Path to the solver to use (solver config file (.msc) or 'gecode'/'chuffed')",
-        default="chuffed")
+        default="gecode")
     argpars.add_argument("--problems", "-p", type=str,
         help="Pattern to gather all instances to be solved",
         default="utils/samples/ins-sample.txt")
@@ -60,21 +60,25 @@ def solve_instance(mz_instance, filename=None, verbose=False) -> SolutionInstanc
     result = mz_instance.solve(timeout=timedelta(minutes=5), random_seed=42,
         optimisation_level=1)
     end_time = datetime.now()
-    if result is None:
-        print("Unfeasible after {} seconds".format((end_time-start_time).seconds*1e-6))
+    duration = end_time - start_time
+    duration = duration.seconds + duration.microseconds*1e-6
+    print(result)
+    try:
+        if verbose:
+            print("h: {}".format(result['h']))
+            print("x: {}".format(result['x_positions']))
+            print("y: {}".format(result['y_positions']))
+            print("Solving took {} s".format(duration))
+            print()
+            print("Generating the solution file...")
+            print("=========================================================")
+        solution = SolutionInstance(problem.wg, int(result['h']), problem.n,
+            [Circuit(problem.circuits[i].w, problem.circuits[i].h,
+                result['x_positions'][i], result['y_positions'][i]) for i in range(problem.n)])        
+        return solution
+    except KeyError:
+        print("Unfeasible after {} seconds".format(duration))
         raise UnfeasibleException()
-    if verbose:
-        print("Solving took {} s".format((end_time-start_time).microseconds*1e-6))
-        print("h: {}".format(result['h']))
-        print("x: {}".format(result['x_positions']))
-        print("y: {}".format(result['y_positions']))
-        print()
-        print("Generating the solution file...")
-        print("=========================================================")
-    solution = SolutionInstance(problem.wg, int(result['h']), problem.n,
-        [Circuit(problem.circuits[i].w, problem.circuits[i].h,
-            result['x_positions'][i], result['y_positions'][i]) for i in range(problem.n)])        
-    return solution
 
 if __name__ == '__main__':
     args = parse_args()
