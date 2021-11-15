@@ -12,16 +12,16 @@ def parse_args():
     argpars = argparse.ArgumentParser()
     argpars.add_argument('--model', '-m', 
         type=str, help="Path to the model to execute (.mzn file)",
-        default="CP/src/VLSI-model.mzn")
+        default="CP\src\VLSI-model.mzn")
     argpars.add_argument('--solver', '-s',
         type=str, help="Path to the solver to use (solver config file (.msc) or 'gecode'/'chuffed')",
         default="gecode")
     argpars.add_argument("--problems", "-p", type=str,
         help="Pattern to gather all instances to be solved",
-        default="utils/samples/ins-sample.txt")
+        default="utils\samples\ins-sample.txt")
     argpars.add_argument("--output_dir", '-odir', type=str,
         help="Where to create the sequence of output files",
-        default="utils/samples")
+        default="utils\samples")
     argpars.add_argument("--show", action="store_true",
         help="Use this flag to show the solution after each solved problem")
     return argpars.parse_args()

@@ -2,8 +2,9 @@
 
 include "alldifferent.mzn";
 include "cumulative.mzn";
-include "disjunctive.mzn";
+%include "disjunctive.mzn";
 include "among.mzn";
+include "diffn.mzn";
 
 % 2. Inputs for the problem:
 
@@ -31,7 +32,7 @@ set of int: POSSIBLE_Y = 0..max_h;
 array[CIRCUITS] of var POSSIBLE_X: x_positions;
 array[CIRCUITS] of var POSSIBLE_Y: y_positions;
 % Post a clearer upper-bound constraint after the declaration because h is a var
-constraint forall (c in CIRCUITS)(y_positions[c] <= h);
+constraint forall (c in CIRCUITS)(y_positions[c] + measures[c,2] <= h);
 
 % Another obvious constraint is that there shouldn't be two circuits on the same
 % position.  It's a redundant constraint because we'll later define some non-overlapping 
@@ -114,20 +115,60 @@ constraint forall (c in CIRCUITS)(x_positions[c] + measures[c, 1] <= w);
 % Alternative 2:
                       
 % To avoid overlapping circuits, we can post a no-overlap constraint for each row
-% and column. We use generators as a mechanism to select which circuits positions we
-% care about
-%constraint forall (hi in 0..h) (
-%    disjunctive([ x_positions[c] | c in CIRCUITS where y_positions[c] <= hi /\ hi <= (y_positions[c] + measures[c,2]) ],
-%                [ measures[c, 1] | c in CIRCUITS where y_positions[c] <= hi /\ hi <= (y_positions[c] + measures[c,2]) ]
+% and column. 
+%constraint forall (hi in 0..h where exists(c in CIRCUITS)(y_positions[c] <= hi /\ hi <= (y_positions[c] + measures[c,2]))) (
+    % Note: the disjunctive predicate does not accept an array of optionals for durations (the second array).
+    % In my opinion the most effective way to represent the arrays is through generators on the previously
+    % defined array of sets, except those sets are created through unfixed generators using the where clause
+    % and are therefore silently casted to set of opt int.
+    % Of course we don't want to post the disjunctive constraint on empty arrays, so in this forall we make
+    % the necessary check (where occurs ...) so that we know that at y = hi there is at least a circuit.
+    % This check ideally allows us to express the arrays simply as:
+    % [ x_positions[c] | c in circuits_per_y[hi] ] (and similarly for the durations array)
+    % because we know that circuits_per_y[hi] is not going to be the empty set.
+    % But the MiniZinc compiler does not understand this and still infers that circuits_per_y[hi]
+    % is a set of opt int. To fix this we need to deploy the trick shown below, where we explicitly
+    % create an array where we deopt (de-optionalize) the circuits.
+%    disjunctive([ deopt(x_positions[c]) | c in [ deopt(c) | c in CIRCUITS where y_positions[c] <= hi /\ hi <= (y_positions[c] + measures[c,2]) ]], % The starting positions are x positions
+%                [ deopt(measures[c,1])  | c in [ deopt(c) | c in CIRCUITS where y_positions[c] <= hi /\ hi <= (y_positions[c] + measures[c,2]) ]]  % The durations are the widths
 %    )
 %);
 % We post the same constraint on the y axis.
+%constraint forall (wi in 0..w where exists(c in CIRCUITS)(x_positions[c] <= wi /\ wi <= (x_positions[c] + measures[c,1]))) (
+%    disjunctive([ deopt(y_positions[c]) | c in [deopt(c) | c in CIRCUITS where x_positions[c] <= wi /\ wi <= (x_positions[c] + measures[c,1]) ]], % The starting positions are y positions
+%                [ deopt(measures[c,2])  | c in [deopt(c) | c in CIRCUITS where x_positions[c] <= wi /\ wi <= (x_positions[c] + measures[c,1]) ]]  % The durations are the heights
+%    )
+%);
+
+% Alternative 3: naive solution
+%constraint forall (hi in 0..h) (
+    % For each height level, for each pair of different circuits at that level, post a (decomposed) no-overlap constraint
+%    forall (c1, c2 in [ c | c in CIRCUITS where y_positions[c] <= hi /\ hi <= (y_positions[c] + measures[c,2]) ] where c1 != c2) (
+%            x_positions[c1] + measures[c1,1] <= x_positions[c2] \/ x_positions[c2] + measures[c2,1] <= x_positions[c1]
+%    )
+%);
 %constraint forall (wi in 0..w) (
-%    disjunctive([ y_positions[c] | c in CIRCUITS where x_positions[c] <= wi /\ wi <= (x_positions[c] + measures[c,1]) ],
-%                [ deopt(measures[c, 2]) | c in CIRCUITS where x_positions[c] <= wi /\ wi <= (x_positions[c] + measures[c,1]) ] 
-%));
+    % For each width level, for each pair of different circuits at that level, post a (decomposed) no-overlap constraint
+%    forall (c1, c2 in [ c | c in CIRCUITS where x_positions[c] <= wi /\ wi <= (x_positions[c] + measures[c,1]) ] where c1 != c2) (
+%            y_positions[c1] + measures[c1,2] <= y_positions[c2] \/ y_positions[c2] + measures[c2,2] <= y_positions[c1]
+%    )
+%);
+
+% ALTERNATIVE 4: LITERALLY THERE IS A GLOBAL CONSTRAINT FOR RECTANGLES TO NOT OVERLAP AND I DIDN'T KNOW ABOUT ITTTTTT
+% diffn is a global constraint that "constrains rectangles i , given by their origins ( x [ i ], y [ i ]) and sizes 
+% ( dx [ i ], dy [ i ]), to be non-overlapping. Zero-width rectangles can still not overlap with any other rectangle.
+constraint diffn(x_positions, y_positions, col(measures, 1), col(measures, 2));
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Another constraint we can post is that along the border of a circuit there must be another circuit
+% (except at the borders of the boards).
+% To facilitate posting this constraint, we should construct another dual view of the model:
+% a matrix of integers, each integer representing a circuit and the number -1 representing
+% the absence of circuits.
+%set of int : OPTIONAL_CIRCUITS = -1..n;
+%array[w, max_h] of var OPTIONAL_CIRCUITS : matrix_view;
+%constraint 
 
 % What is the value of h? It's the maximum between the values of y_positions + h of 
 % circuits
