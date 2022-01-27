@@ -1,8 +1,10 @@
 {
+    "-O": 3,
     "intermediate-solutions": true,
     "output-time": true,
+    "parallel": 4,
     "random-seed": "42",
-    "solver": "org.chuffed.chuffed@0.10.4",
+    "solver": "org.gecode.gecode@6.3.0",
     "solver-statistics": true,
     "time-limit": 300000
 }
