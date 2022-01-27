@@ -30,9 +30,8 @@ set of int: POSSIBLE_Y = 0..max_h;
 array[CIRCUITS] of var POSSIBLE_X: x_positions;
 array[CIRCUITS] of var POSSIBLE_Y: y_positions;
 
-% CONSTRAINTS
 
-% - REDUNDANT
+% CONSTRAINTS
 % Post an upper-bound constraint on y_positions after the declaration because h is a var
 constraint forall (c in CIRCUITS)(
     y_positions[c] + heights[c] <= h
@@ -42,37 +41,11 @@ constraint forall (c in CIRCUITS)(
     x_positions[c] + widths[c] <= w
 )::domain;
 
-% - NORMAL 
 % To avoid overlaps between circuits, we can use the diffn global constraint.
 % diffn is a global constraint that "constrains rectangles i, given by their origins 
 % (x[i], y[i]) and sizes (dx[i], dy[i]), to be non-overlapping. 
 constraint diffn(x_positions, y_positions, col(measures, 1), col(measures, 2))::domain; 
 
-% We can use the "cumulative" global constraint to create solutions where the 
-% circuits are placed so that they never occupy more than a certain amount of space.
-% The cumulative global constraint is used to constrain the usage of a shared resource.
-% Usually, the main agents at play with this constraint are tasks with a starting time,
-% a duration and a resource requirement to be placed in a resource with a certain capacity.
-% We can make the following analogy:
-% - tasks are circuits
-% - the width of the plate is our capacity
-% - the starting time of the task is the assigned y_position (we look at the "rotated" circuit)
-% - the duration is the height of the circuit
-% - the resource requirement of the task is the width of the circuit
-% Basically, this means that at any height, the circuits are constrained to be placed within
-% the w columns.
-constraint cumulative(y_positions, [ measures[c,2] | c in CIRCUITS ], 
-                      [ measures[c,1] | c in CIRCUITS ], w)::domain;
-% The same can be told for the x axis. In this case:
-% - The height of the circuit is our capacity
-% - The starting time of the task is the assigned x_position
-% - The duration is the width of the circuit
-% - The resource requirement is the height of the circuit
-% So, circuits are also constrained to be within height h
-constraint cumulative(x_positions, [ measures[c, 1] | c in CIRCUITS ],
-                      [ measures[c, 2] | c in CIRCUITS ], h)::domain;
-                      
-% DUAL VIEW
 % Another obvious constraint is that there shouldn't be two circuits on the same
 % position. It's a redundant constraint because we'll later define some non-overlapping 
 % constraints, but we can implement this using a dual viewpoint and a free global constraint,
@@ -86,12 +59,40 @@ array[CIRCUITS] of var POSSIBLE_TRANSL_POS: transl_pos;
 % Channeling constraint between these two viewpoints
 constraint forall (c in CIRCUITS)(
   transl_pos[c] = y_positions[c] * w + x_positions[c]
-)::domain;
+);
 % Then we can define the actual constraint using alldifferent.
-constraint alldifferent(transl_pos)::domain;
+constraint alldifferent(transl_pos);
 % With this different point of view, can try to reduce waste of space (as well as reduce the search space)
 % by constraining at least one circuit to be in the origin position.
-constraint count(i in transl_pos)(i = 0) = 1::domain; % Requires that exactly one of the positions is (0,0)        
+constraint count(i in transl_pos)(i = 0) = 1::domain; % Requires that exactly one of the positions is (0,0)
+
+% We can use the "cumulative" global constraint to create solutions where the 
+% circuits are placed so that they never occupy more than a certain amount of space.
+% The cumulative global constraint is used to constrain the usage of a shared resource.
+% Usually, the main agents at play with this constraint are tasks with a starting time,
+% a duration and a resource requirement to be placed in a resource with a certain capacity.
+% We can make the following analogy:
+% - tasks are circuits
+% - the width of the plate is our capacity
+% - the starting time of the task is the assigned y_position (we look at the "rotated" circuit)
+% - the duration is the fixed height of the circuit
+% - the resource requirement of the task is the fixed width of the circuit
+% Basically, this means that at any height, the circuits are constrained to be placed within
+% the first w columns.
+constraint cumulative(y_positions, [ measures[c,2] | c in CIRCUITS ], 
+                      [ measures[c,1] | c in CIRCUITS ], w)::domain;
+% The same can be told for the x axis. In this case:
+% - The height of the circuit is our capacity
+% - The starting time of the task is the assigned x_position
+% - The duration is the fixed width of the circuit
+% - The resource requirement is the fixed height of the circuit
+% So, circuits are also constrained to be within height h
+constraint cumulative(x_positions, [ measures[c, 1] | c in CIRCUITS ],
+                      [ measures[c, 2] | c in CIRCUITS ], h)::domain;
+
+% What is the value of h? It's the maximum between the values of y_positions + h of 
+% circuits
+constraint h = max([y_positions[c] + measures[c,2] | c in CIRCUITS]);
 
 % SYMMETRY BREAKING
 % Flipping a solution horizontally/vertically or by the diagonals generates another
@@ -121,55 +122,16 @@ constraint symmetry_breaking_constraint(
                              ( w - x_positions[c] - widths[c]  ) | c in CIRCUITS ])
 )::domain;
 
-
-% OTHER IDEAS AND TODOs
-
-% Another constraint we can post is that along the border of a circuit there must be another circuit
-% (except at the borders of the boards).
-% To facilitate posting this constraint, we should construct another dual view of the model:
-% a matrix of integers, each integer representing a circuit and the number -1 representing
-% the absence of circuits.
-%set of int : OPTIONAL_CIRCUITS = -1..n;
-%array[POSSIBLE_X, POSSIBLE_Y] of var OPTIONAL_CIRCUITS : M;
-% channeling constraints to link the two models
-%constraint forall(c in CIRCUITS) (
-    % Mark for each circuit the positions it occupies
-%    forall( i in x_positions[c]..min(w, x_positions[c]+measures[c,1]),
-%            j in y_positions[c]..min(max_h, y_positions[c]+measures[c,2]) )
-%    ( M[i,j] = c )
-%);
-% The unoccupied positions should be marked with -1
-%constraint forall (i in POSSIBLE_X, j in POSSIBLE_Y) (forall(c in CIRCUITS)
-    % For all positions of the matrix, we check that it does not overlap with any circuit.
-    % Instead of using 
-    % not exists(c in CIRCUITS) ( p(c) )
-    % we use the equivalent
-    % forall (c in CIRCUITS) ( not(p(c)) )
-    % It probably does not change anything, but I'm highly suspicious of existential quantifiers
-    % because poor implementations may lead to posting disjunctions, while forall is certainly
-    % a sequence of conjunctions
-%    (not ( i >= x_positions[c] /\ i < x_positions[c]+measures[c,1] /\
-%           j >= y_positions[c] /\ j < y_positions[c]+measures[c,2] ) )
-%      <-> M[i,j] = -1
-%);
-% These two constraints should be able to fill the whole matrix.
-
-% TODO: for the cost function, think about how we can penalize empty spaces
-% An idea could be using a cost function like: h*w + whitespaces, so the model
-% will try to reduce h since the effect will be stronger
-
-
-% SEARCH
+% 5. Search
+include "chuffed.mzn";
 ann : search_ann = seq_search([
-            int_search(y_positions, dom_w_deg, indomain_min),     % Try to assign the y_positions, assigning the minimum values first because we need to minimize height
-            int_search(x_positions, dom_w_deg, indomain_min),     % Then assign the min values to x_positions, so to have a compact representation
+            int_search(y_positions, smallest, indomain_min),     % Try to assign the y_positions, assigning the minimum values first because we need to minimize height
+            int_search(x_positions, random_order, indomain_min),  % Then assign the smallest values to x_positions, so to have a compact representation
 ]);
 
-include "gecode.mzn";
 solve :: search_ann :: 
-         restart_luby(300) ::                      % Apply Luby restarting
-         relax_and_reconstruct(x_positions, 60)    % For large neighbourhood search if we work with gecode: upon restart keep some of the variables fixed
-                                                   %   to the previous (good) solutions and explore those neighhbourhoods.
+         restart_luby(300)    % Apply Luby restarting
+                              % to the previous (good) solutions and explore those neighhbourhoods.
          minimize h;
 
-output ["x_pos=\(x_positions)\ty_pos=\(y_positions)\th=\(h)\ntransl_pos=\(transl_pos)\n"];
+output ["x_pos=\(x_positions)\ty_pos=\(y_positions)\th=\(h)\n"];
