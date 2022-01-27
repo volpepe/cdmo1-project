@@ -4,7 +4,7 @@ import pathlib
 import os
 from datetime import datetime, timedelta
 from typing import Sequence
-from minizinc import Instance as SolverInstance, Model, Solver
+from minizinc import Instance as SolverInstance, MiniZincError, Model, Solver
 from problem import ProblemInstance, parse_problem_file
 from solution import Circuit, SolutionInstance
 
@@ -57,8 +57,12 @@ def solve_instance(mz_instance, filename=None, verbose=False) -> SolutionInstanc
         print("Solving problem {}...".format(filename))
         print()
     start_time = datetime.now()
-    result = mz_instance.solve(timeout=timedelta(minutes=5), random_seed=42,
-        optimisation_level=1)
+    try:
+        result = mz_instance.solve(timeout=timedelta(minutes=5), random_seed=42,
+            optimisation_level=1)
+    except MiniZincError as e:
+        print("Problem could not be solved: {}".format(e))
+        raise UnfeasibleException()
     end_time = datetime.now()
     duration = end_time - start_time
     duration = duration.seconds + duration.microseconds*1e-6
@@ -76,8 +80,9 @@ def solve_instance(mz_instance, filename=None, verbose=False) -> SolutionInstanc
             [Circuit(problem.circuits[i].w, problem.circuits[i].h,
                 result['x_positions'][i], result['y_positions'][i]) for i in range(problem.n)])        
         return solution
-    except KeyError:
-        print("Unfeasible after {} seconds".format(duration))
+    except Exception as e:
+        print("Unfeasible or other problems after {} seconds".format(duration))
+        print(e)
         raise UnfeasibleException()
 
 if __name__ == '__main__':

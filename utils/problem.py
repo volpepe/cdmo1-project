@@ -20,6 +20,18 @@ class ProblemInstance():
     def add_circuit(self, circuit:IncompleteCircuit):
         self.circuits.append(circuit)
 
+    def format_for_dzn(self) -> str:
+        txt = 'w = {};\nn = {};\nmeasures = [|'.format(self.wg, self.n)
+        for circuit in self.circuits:
+            txt += '{}, {},\n|'.format(circuit.w, circuit.h)
+        txt += '];'
+        return txt
+
+    def write_to_dzn(self, filename):
+        txt = self.format_for_dzn()
+        with open(filename, 'w') as f:
+            f.write(txt)
+
 
 def parse_problem_file(filename) -> ProblemInstance:
     with open(filename, 'r') as f:
