@@ -12,9 +12,12 @@ set of int: CIRCUITS = 1..n;
 array[CIRCUITS,1..2] of int: measures;  % The width and height of every circuit to place.
 array[CIRCUITS] of int: widths = col(measures, 1);  % Just a renaming of the above columns for convenience
 array[CIRCUITS] of int: heights = col(measures, 2);
+% Initial solutions
+array[CIRCUITS] of int: initial_x;
+array[CIRCUITS] of int: initial_y;
 
-% Intermediate variable: the sum of all heights to give an upper bound to h
-int: max_h = sum(heights);
+% Intermediate variable: the maximum height reached in the initial solution
+int: max_h = max([ initial_y[c] + heights[c] | c in CIRCUITS ]);
 
 % VARIABLES
 % Height of the plate. 
@@ -57,7 +60,7 @@ set of int: POSSIBLE_TRANSL_POS = 0..(max_h+1)*w;
 array[CIRCUITS] of var POSSIBLE_TRANSL_POS: transl_pos;
 % Channeling constraint between these two viewpoints
 constraint forall (c in CIRCUITS)(
-  transl_pos[c] = y_positions[c] * w + x_positions[c]
+    transl_pos[c] = y_positions[c] * w + x_positions[c]
 );
 % Then we can define the actual constraint using alldifferent.
 constraint alldifferent(transl_pos);
@@ -129,9 +132,10 @@ constraint h = max([y_positions[c] + measures[c,2] | c in CIRCUITS]);
 
 include "gecode.mzn";
 solve :: search_ann :: 
-         restart_luby(300)   ::                    % Apply Luby restarting
-         relax_and_reconstruct(x_positions, 70)    % For large neighbourhood search if we work with gecode: upon restart keep some of the variables fixed
-                                                   %   to the previous (good) solutions and explore those neighhbourhoods.
+         restart_luby(250)   ::                    % Apply Luby restarting
+         relax_and_reconstruct(transl_pos, 50,     % For large neighbourhood search if we work with gecode: upon restart keep some of the variables fixed
+             [ initial_y[c] * w + initial_x[c] | c in CIRCUITS ]      %   to the previous (good) solutions and explore those neighbourhoods.
+         )                                         % Also, start from the initial solution.
          minimize h;                               % We are trying to minimize the final height
 
 output ["x_pos=\(x_positions)\ty_pos=\(y_positions)\th=\(h)\n"];

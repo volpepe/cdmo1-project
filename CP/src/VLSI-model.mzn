@@ -161,14 +161,14 @@ constraint symmetry_breaking_constraint(
 
 % SEARCH
 ann : search_ann = seq_search([
-            int_search(y_positions, dom_w_deg, indomain_min),     % Try to assign the y_positions, assigning the minimum values first because we need to minimize height
-            int_search(x_positions, dom_w_deg, indomain_min),     % Then assign the min values to x_positions, so to have a compact representation
+    int_search(y_positions, dom_w_deg, indomain_min),     % Try to assign the y_positions, assigning the minimum values first because we need to minimize height
+    int_search(x_positions, dom_w_deg, indomain_min),     % Then assign the min values to x_positions, so to have a compact representation
 ]);
 
 include "gecode.mzn";
 solve :: search_ann :: 
-         restart_luby(300) ::                      % Apply Luby restarting
-         relax_and_reconstruct(x_positions, 60)    % For large neighbourhood search if we work with gecode: upon restart keep some of the variables fixed
+         restart_luby(250) ::                      % Apply Luby restarting
+         relax_and_reconstruct(x_positions, 50)    % For large neighbourhood search if we work with gecode: upon restart keep some of the variables fixed
                                                    %   to the previous (good) solutions and explore those neighhbourhoods.
          minimize h;
 

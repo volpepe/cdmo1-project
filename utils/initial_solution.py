@@ -1,6 +1,5 @@
 import os
 import argparse
-import random
 from solution import SolutionInstance, Circuit
 from problem import ProblemInstance
 
