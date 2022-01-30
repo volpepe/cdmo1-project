@@ -27,13 +27,19 @@ class ProblemInstance():
         txt += '];'
         return txt
 
-    def write_to_dzn(self, filename):
+    def write_to_dzn(self, filename:str, 
+                     initial_solution=None):
         txt = self.format_for_dzn()
+        if initial_solution is not None:
+            txt += '\ninitial_x = {};\ninitial_y = {};'.format(
+                [c.x0 for c in initial_solution.circuits],
+                [c.y0 for c in initial_solution.circuits]
+            )
         with open(filename, 'w') as f:
             f.write(txt)
 
 
-def parse_problem_file(filename) -> ProblemInstance:
+def parse_problem_file(filename:str) -> ProblemInstance:
     with open(filename, 'r') as f:
         lines = [x.rstrip() for x in f.readlines()]
     # First line (wgrid and hgrid)
