@@ -2,7 +2,6 @@ import os
 import argparse
 import random
 from solution import SolutionInstance, Circuit
-from CP_launcher import get_problem_filenames, get_problem_instance
 from problem import ProblemInstance
 
 def parse_args():
@@ -30,9 +29,8 @@ def update_current_y(current_y, circuits, xs, ys):
     return current_y
 
 def construct_initial_solution(problem: ProblemInstance) -> SolutionInstance:
-    # Get the circuits and shuffle them randomly
+    # Get the circuits
     circuits = problem.circuits
-    random.shuffle(circuits)
     # The first circuit will be at 0,0
     xs, ys = [0], [0]
     # We keep track of what the next y should be by keeping a list of the 
@@ -68,6 +66,8 @@ def construct_initial_solution(problem: ProblemInstance) -> SolutionInstance:
 
 
 if __name__ == '__main__':
+    from CP_launcher import get_problem_filenames, get_problem_instance
+
     args = parse_args()
     # Load problem instance
     filename = get_problem_filenames(args.problem)[0]

@@ -7,23 +7,26 @@ from typing import Sequence
 from minizinc import Instance as SolverInstance, MiniZincError, Model, Solver
 from problem import ProblemInstance, parse_problem_file
 from solution import Circuit, SolutionInstance
+from initial_solution import construct_initial_solution
 
 def parse_args():
     argpars = argparse.ArgumentParser()
     argpars.add_argument('--model', '-m', 
         type=str, help="Path to the model to execute (.mzn file)",
-        default="CP\src\VLSI-model.mzn")
+        default=os.path.join("CP", "src", "VLSI-model.mzn"))
     argpars.add_argument('--solver', '-s',
         type=str, help="Path to the solver to use (solver config file (.msc) or 'gecode'/'chuffed')",
         default="gecode")
     argpars.add_argument("--problems", "-p", type=str,
         help="Pattern to gather all instances to be solved",
-        default="utils\samples\ins-sample.txt")
+        default=os.path.join("utils", "samples", "ins-sample.txt"))
     argpars.add_argument("--output_dir", '-odir', type=str,
         help="Where to create the sequence of output files",
-        default="utils\samples")
+        default=os.path.join("utils", "samples"))
     argpars.add_argument("--show", action="store_true",
         help="Use this flag to show the solution after each solved problem")
+    argpars.add_argument("--use_initial_solution", action='store_true',
+        help="Whether the model requires an initial solution for search")
     return argpars.parse_args()
 
 class UnfeasibleException(Exception):
@@ -101,15 +104,19 @@ if __name__ == '__main__':
 
     # Iterate over instances
     for filename in problem_filenames:
-        # Create an instance of the MiniZinc
+        # Create an instance of the MiniZinc and the problem
         mz_instance = create_minizinc_instance(solver, model)
-
         problem = get_problem_instance(filename)
 
         # Assign variables
         mz_instance["w"] = problem.wg
         mz_instance["n"] = problem.n
         mz_instance["measures"] = [[circuit.w, circuit.h] for circuit in problem.circuits]
+
+        if args.use_initial_solution:
+            initial_solution = construct_initial_solution(problem)
+            mz_instance["initial_x"] = [ c.x0 for c in initial_solution.circuits ]
+            mz_instance["initial_y"] = [ c.y0 for c in initial_solution.circuits ]
 
         try: 
             solution = solve_instance(mz_instance, filename, verbose=True)
