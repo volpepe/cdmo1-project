@@ -1,4 +1,4 @@
-from typing import Sequence
+from typing import List, Sequence
 
 class IncompleteCircuit():
 
@@ -39,6 +39,10 @@ class ProblemInstance():
             f.write(txt)
 
 
+def order_by_area(circuits):
+    # Returns circuits sorted by their area (largest first)
+    return sorted(circuits, key=lambda c:c.h*c.w, reverse=True)
+
 def parse_problem_file(filename:str) -> ProblemInstance:
     with open(filename, 'r') as f:
         lines = [x.rstrip() for x in f.readlines()]
@@ -51,4 +55,6 @@ def parse_problem_file(filename:str) -> ProblemInstance:
     for inst in lines[2:]:
         w, h = [int(v) for v in inst.split(' ')]
         instance.add_circuit(IncompleteCircuit(w, h))
+    # Sort instance circuits by their areas
+    instance.circuits = order_by_area(instance.circuits)
     return instance

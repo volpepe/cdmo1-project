@@ -6,15 +6,20 @@ include "diffn.mzn";
 include "lex_lesseq.mzn";
 
 % INPUTS AND VARIABLES
+% ASSUMPTION: circuits have been ordered by largest circuit to smallest
 int: w;       % Width of the plate.
 int: n;       % Number of circuits to place on the plate.
 set of int: CIRCUITS = 1..n;
 array[CIRCUITS,1..2] of int: measures;  % The width and height of every circuit to place.
 array[CIRCUITS] of int: widths = col(measures, 1);  % Just a renaming of the above columns for convenience
 array[CIRCUITS] of int: heights = col(measures, 2);
+% Initial solutions. 
+array[CIRCUITS] of int: initial_x;
+array[CIRCUITS] of int: initial_y;
 
-% Intermediate variable: the sum of all heights to give an upper bound to h
-int: max_h = sum(heights);
+% Intermediate variable: the maximum height reached in the initial solution
+int: max_h = max([ initial_y[c] + heights[c] | c in CIRCUITS ]);
+
 
 % VARIABLES
 % Height of the plate. 
@@ -158,18 +163,30 @@ constraint symmetry_breaking_constraint(
 % An idea could be using a cost function like: h*w + whitespaces, so the model
 % will try to reduce h since the effect will be stronger
 
+% What is the value of h? It's the maximum between the values of y_positions + h of 
+% circuits
+constraint h = max([y_positions[c] + measures[c,2] | c in CIRCUITS]);
+
+% Also, another measure of quality is how many blank spaces are present in the model. 
+% If we have w*h possible spaces and the area of each circuit is given by its wc and hc,
+% we can say that the number of blank spaces is:
+var int: blanks;
+constraint blanks = w*h - sum([widths[c]*heights[c] | c in CIRCUITS]);
+
 
 % SEARCH
 ann : search_ann = seq_search([
-    int_search(y_positions, dom_w_deg, indomain_min),     % Try to assign the y_positions, assigning the minimum values first because we need to minimize height
-    int_search(x_positions, dom_w_deg, indomain_min),     % Then assign the min values to x_positions, so to have a compact representation
+    int_search(y_positions, input_order, indomain_min),     % Try to assign the y_positions, assigning the minimum values to the largest circuits first because we need to minimize height
+    int_search(x_positions, input_order, indomain_min),      % Then assign the min values to x_positions, so to have a compact representation
 ]);
+
 
 include "gecode.mzn";
 solve :: search_ann :: 
          restart_luby(250) ::                      % Apply Luby restarting
-         relax_and_reconstruct(x_positions, 50)    % For large neighbourhood search if we work with gecode: upon restart keep some of the variables fixed
-                                                   %   to the previous (good) solutions and explore those neighhbourhoods.
-         minimize h;
+         relax_and_reconstruct(transl_pos, 50,     % For large neighbourhood search if we work with gecode: upon restart keep some of the variables fixed
+             [ initial_y[c] * w + initial_x[c] | c in CIRCUITS ]      %   to the previous (good) solutions and explore those neighbourhoods.
+         )                                         % Also, start from the initial solution.
+         minimize blanks;
 
 output ["x_pos=\(x_positions)\ty_pos=\(y_positions)\th=\(h)\ntransl_pos=\(transl_pos)\n"];

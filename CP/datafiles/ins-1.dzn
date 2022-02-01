@@ -1,9 +1,9 @@
 w = 8;
 n = 4;
-measures = [|3, 3,
+measures = [|5, 5,
 |3, 5,
 |5, 3,
-|5, 5,
+|3, 3,
 |];
-initial_x = [0, 3, 0, 0];
-initial_y = [0, 0, 5, 8];
+initial_x = [0, 5, 0, 5];
+initial_y = [0, 0, 5, 5];
