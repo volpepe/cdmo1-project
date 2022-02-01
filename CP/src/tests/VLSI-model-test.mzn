@@ -6,13 +6,14 @@ include "diffn.mzn";
 include "lex_lesseq.mzn";
 
 % INPUTS AND VARIABLES
+% ASSUMPTION: circuits have been ordered by largest circuit to smallest
 int: w;       % Width of the plate.
 int: n;       % Number of circuits to place on the plate.
 set of int: CIRCUITS = 1..n;
 array[CIRCUITS,1..2] of int: measures;  % The width and height of every circuit to place.
 array[CIRCUITS] of int: widths = col(measures, 1);  % Just a renaming of the above columns for convenience
 array[CIRCUITS] of int: heights = col(measures, 2);
-% Initial solutions
+% Initial solutions. 
 array[CIRCUITS] of int: initial_x;
 array[CIRCUITS] of int: initial_y;
 
@@ -43,6 +44,24 @@ constraint forall (c in CIRCUITS)(
     x_positions[c] + widths[c] <= w
 )::domain;
 
+% I tried to post the same constraint with bin_packing, but it was slower
+
+% Also, I tried this to post a better diffn, but it gets really slow for harder problems
+%constraint geost_smallest_bb(
+%    2,                                            % 2 dimensions
+%    array2d(CIRCUITS, 1..2, 
+%        [ if j mod 2 = 0 then widths[c] 
+%          else heights[c] endif | c in CIRCUITS, j in 1..2 ]),    % The sizes of the rectangles
+%    array2d(CIRCUITS, 1..2, [ 0 | c in CIRCUITS, j in 1..2 ]),    % The offsets from the base positions
+%    [ { c } | c in CIRCUITS ],                        % The shapes to use
+%    array2d(CIRCUITS, 1..2, 
+%        [ if j mod 2 = 0 then x_positions[c]
+%          else y_positions[c] endif | c in CIRCUITS, j in 1..2 ]), % The base positions of the elements
+%    [ c | c in CIRCUITS ],                        % The chosen shapes (there is only one choice in this case)
+%    [ 0, 0 ],                                     % Lower bounds for the BB
+%    [ w, h ]                                      % Upper bounds for the BB
+%);
+
 % To avoid overlaps between circuits, we can use the diffn global constraint.
 % diffn is a global constraint that "constrains rectangles i, given by their origins 
 % (x[i], y[i]) and sizes (dx[i], dy[i]), to be non-overlapping. 
@@ -61,9 +80,9 @@ array[CIRCUITS] of var POSSIBLE_TRANSL_POS: transl_pos;
 % Channeling constraint between these two viewpoints
 constraint forall (c in CIRCUITS)(
     transl_pos[c] = y_positions[c] * w + x_positions[c]
-);
+)::domain;
 % Then we can define the actual constraint using alldifferent.
-constraint alldifferent(transl_pos);
+constraint alldifferent(transl_pos)::domain;
 % With this different point of view, can try to reduce waste of space (as well as reduce the search space)
 % by constraining at least one circuit to be in the origin position.
 constraint count(i in transl_pos)(i = 0) = 1::domain; % Requires that exactly one of the positions is (0,0)
@@ -122,13 +141,19 @@ constraint symmetry_breaking_constraint(
 
 % SEARCH
 ann : search_ann = seq_search([
-    int_search(y_positions, dom_w_deg, indomain_min),     % Try to assign the y_positions, assigning the minimum values first because we need to minimize height
-    int_search(x_positions, dom_w_deg, indomain_min),     % Then assign the min values to x_positions, so to have a compact representation
+    int_search(y_positions, input_order, indomain_min),     % Try to assign the y_positions, assigning the minimum values to the largest circuits first because we need to minimize height
+    int_search(x_positions, input_order, indomain_min),      % Then assign the min values to x_positions, so to have a compact representation
 ]);
 
 % What is the value of h? It's the maximum between the values of y_positions + h of 
 % circuits
 constraint h = max([y_positions[c] + measures[c,2] | c in CIRCUITS]);
+
+% Also, another measure of quality is how many blank spaces are present in the model. 
+% If we have w*h possible spaces and the area of each circuit is given by its wc and hc,
+% we can say that the number of blank spaces is:
+var int: blanks;
+constraint blanks = w*h - sum([widths[c]*heights[c] | c in CIRCUITS]);
 
 include "gecode.mzn";
 solve :: search_ann :: 
@@ -136,6 +161,6 @@ solve :: search_ann ::
          relax_and_reconstruct(transl_pos, 50,     % For large neighbourhood search if we work with gecode: upon restart keep some of the variables fixed
              [ initial_y[c] * w + initial_x[c] | c in CIRCUITS ]      %   to the previous (good) solutions and explore those neighbourhoods.
          )                                         % Also, start from the initial solution.
-         minimize h;                               % We are trying to minimize the final height
+         minimize blanks;                          % We are trying to minimize the final height
 
 output ["x_pos=\(x_positions)\ty_pos=\(y_positions)\th=\(h)\n"];

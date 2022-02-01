@@ -12,9 +12,12 @@ set of int: CIRCUITS = 1..n;
 array[CIRCUITS,1..2] of int: measures;  % The width and height of every circuit to place.
 array[CIRCUITS] of int: widths = col(measures, 1);  % Just a renaming of the above columns for convenience
 array[CIRCUITS] of int: heights = col(measures, 2);
+% Initial solutions
+array[CIRCUITS] of int: initial_x;
+array[CIRCUITS] of int: initial_y;
 
-% Intermediate variable: the sum of all heights to give an upper bound to h
-int: max_h = sum(heights);
+% Intermediate variable: the maximum height reached in the initial solution
+int: max_h = max([ initial_y[c] + heights[c] | c in CIRCUITS ]);
 
 % VARIABLES
 % Height of the plate. 
@@ -59,9 +62,9 @@ array[CIRCUITS] of var POSSIBLE_TRANSL_POS: transl_pos;
 % Channeling constraint between these two viewpoints
 constraint forall (c in CIRCUITS)(
   transl_pos[c] = y_positions[c] * w + x_positions[c]
-);
+)::domain;
 % Then we can define the actual constraint using alldifferent.
-constraint alldifferent(transl_pos);
+constraint alldifferent(transl_pos)::domain;
 % With this different point of view, can try to reduce waste of space (as well as reduce the search space)
 % by constraining at least one circuit to be in the origin position.
 constraint count(i in transl_pos)(i = 0) = 1::domain; % Requires that exactly one of the positions is (0,0)
@@ -92,7 +95,7 @@ constraint cumulative(x_positions, [ measures[c, 1] | c in CIRCUITS ],
 
 % What is the value of h? It's the maximum between the values of y_positions + h of 
 % circuits
-constraint h = max([y_positions[c] + measures[c,2] | c in CIRCUITS]);
+constraint h = max([y_positions[c] + measures[c,2] | c in CIRCUITS])::domain;
 
 % SYMMETRY BREAKING
 % Flipping a solution horizontally/vertically or by the diagonals generates another
@@ -122,16 +125,16 @@ constraint symmetry_breaking_constraint(
                              ( w - x_positions[c] - widths[c]  ) | c in CIRCUITS ])
 )::domain;
 
+var ann : search_ann = if sum(widths) div w > sum(heights) div h 
+  then seq_search([int_search(x_positions, smallest, indomain_min), int_search(y_positions, smallest, indomain_min)]) 
+  else seq_search([int_search(y_positions, smallest, indomain_min), int_search(x_positions, smallest, indomain_min)])  endif;
+
 % 5. Search
 include "chuffed.mzn";
-ann : search_ann = seq_search([
-            int_search(y_positions, smallest, indomain_min),     % Try to assign the y_positions, assigning the minimum values first because we need to minimize height
-            int_search(x_positions, random_order, indomain_min),  % Then assign the smallest values to x_positions, so to have a compact representation
-]);
 
 solve :: search_ann :: 
-         restart_luby(300)    % Apply Luby restarting
+         restart_luby(250)    % Apply Luby restarting
                               % to the previous (good) solutions and explore those neighhbourhoods.
-         minimize h;
+         minimize h;  
 
 output ["x_pos=\(x_positions)\ty_pos=\(y_positions)\th=\(h)\n"];
