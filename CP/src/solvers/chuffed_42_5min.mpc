@@ -1,4 +1,5 @@
 {
+    "-O": 2,
     "intermediate-solutions": true,
     "output-time": true,
     "random-seed": "42",
