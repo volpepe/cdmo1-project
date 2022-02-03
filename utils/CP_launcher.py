@@ -7,7 +7,7 @@ from typing import Sequence
 from minizinc import Instance as SolverInstance, \
     MiniZincError, Model, Solver, Status
 from problem import ProblemInstance, parse_problem_file
-from solution import Circuit, SolutionInstance
+from solution import Circuit, SolutionInstance, RotatingSolutionInstance
 from initial_solution import construct_initial_solution
 from summary_writer import Summary
 
@@ -18,7 +18,7 @@ def parse_args():
         default=os.path.join("CP", "src", "VLSI-model.mzn"))
     argpars.add_argument('--solver', '-s',
         type=str, help="Path to the solver to use (solver config file (.msc) or 'gecode'/'chuffed')",
-        default=os.path.join('gecode'))
+        default='gecode')
     argpars.add_argument("--problems", "-p", type=str,
         help="Pattern to gather all instances to be solved",
         default=os.path.join("instances", "ins-1.txt"))
@@ -31,6 +31,8 @@ def parse_args():
         help="Whether the model requires an initial solution for search")
     argpars.add_argument("--output_log", "-log", type=str,
         help="Path to log file", default=os.path.join("CP","out","log.txt"))
+    argpars.add_argument("--rotation_allowed", "-rot", action="store_true",
+        help="Whether the problem should also allow rotation of circuits.")
     return argpars.parse_args()
 
 class UnfeasibleException(Exception):
@@ -59,7 +61,7 @@ def get_output_filename(output_path: str, input_fn:str) -> str:
 
 def solve_instance(mz_instance:SolverInstance, 
                    summary_writer:Summary, filename=None, 
-                   verbose=False) -> SolutionInstance:
+                   verbose=False, return_raw_result=False) -> SolutionInstance:
     # Solve
     if verbose:
         print("=========================================================")
@@ -69,7 +71,7 @@ def solve_instance(mz_instance:SolverInstance,
     try:
         result = mz_instance.solve(random_seed=42, 
             timeout=timedelta(minutes=5),
-            processes=4,                        
+            processes=4 if 'chuffed' not in mz_instance._solver.name.lower() else None,                        
             intermediate_solutions=True)  # Also return all intermediate solutions
     except MiniZincError as e:
         print("Problem could not be solved: {}".format(e))
@@ -100,7 +102,7 @@ def solve_instance(mz_instance:SolverInstance,
                     for i in range(mz_instance["n"]) ]
         )    
         summary_writer.write_final_solution(solution, duration)    
-        return solution
+        return solution if not return_raw_result else (solution, result)
     else:
         print("Unfeasible or non-optimal solution after {} seconds".format(duration))
         if result.status != Status.UNSATISFIABLE:
@@ -112,6 +114,15 @@ def solve_instance(mz_instance:SolverInstance,
             )
             summary_writer.write_best_found_solution(solution, duration) 
         raise UnfeasibleException()
+
+def solve_instance_plus_rotation(mz_instance:SolverInstance,
+                                 summary_writer:Summary, filename=None,
+                                 verbose=False) -> RotatingSolutionInstance:
+    solution, result = solve_instance(mz_instance, summary_writer, filename, verbose, return_raw_result=True)
+    solution = RotatingSolutionInstance(solution.wg, solution.hg, solution.n,
+        solution.circuits)
+    solution.fix_circuits_rotation(result.solution[-1].current_widths, result.solution[-1].current_heights)
+    return solution
 
 if __name__ == '__main__':
     args = parse_args()
@@ -154,7 +165,10 @@ if __name__ == '__main__':
             summary_writer.write_initial_solution(initial_solution, duration)
 
         try: 
-            solution = solve_instance(mz_instance, summary_writer, filename, verbose=True)
+            if args.rotation_allowed:
+                solution = solve_instance_plus_rotation(mz_instance, summary_writer, filename, verbose=True)
+            else:
+                solution = solve_instance(mz_instance, summary_writer, filename, verbose=True)
             solved_problems += 1
 
             out_filename = get_output_filename(args.output_dir, filename)

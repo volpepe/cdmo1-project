@@ -67,6 +67,17 @@ class SolutionInstance(ProblemInstance):
                 for c in self.circuits])
 
 
+class RotatingSolutionInstance(SolutionInstance):
+    
+    # This class allows for rotation of circuits: therefore before
+    # calling draw or printing a solution we should fix heights and
+    # widths of the circuits.
+    def fix_circuits_rotation(self, widths, heights):
+        for i, circuit in enumerate(self.circuits):
+            circuit.h = heights[i]
+            circuit.w = widths[i]
+
+
 def parse_solutions_file(filename):
     with open(filename, 'r') as f:
         lines = [x.rstrip() for x in f.readlines()]
