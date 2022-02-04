@@ -165,15 +165,15 @@ constraint symmetry_breaking_constraint(
 
 % What is the value of h? It's the maximum between the values of y_positions + h of 
 % circuits
-constraint h = max([y_positions[c] + measures[c,2] | c in CIRCUITS]);
-constraint h >= 0;
+constraint h = max([y_positions[c] + measures[c,2] | c in CIRCUITS])::domain;
+constraint h >= 0::domain;
 
 % Also, another measure of quality is how many blank spaces are present in the model. 
 % If we have w*h possible spaces and the area of each circuit is given by its wc and hc,
 % we can say that the number of blank spaces is:
 var int: blanks;
-constraint blanks = w*h - sum([widths[c]*heights[c] | c in CIRCUITS]);
-constraint blanks >= 0;
+constraint blanks = w*h - sum([widths[c]*heights[c] | c in CIRCUITS])::domain;
+constraint blanks >= 0::domain;
 
 % SEARCH
 ann : search_ann = seq_search([
@@ -190,4 +190,4 @@ solve :: search_ann ::
          )                                         % Also, start from the initial solution.
          minimize blanks;
 
-output ["x_pos=\(x_positions)\ty_pos=\(y_positions)\th=\(h)\ntransl_pos=\(transl_pos)\n"];
+output ["x_pos=\(x_positions)\ty_pos=\(y_positions)\th=\(h)\ntransl_pos=\(transl_pos)\nblanks=\(blanks)\n"];

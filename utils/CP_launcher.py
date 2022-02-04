@@ -85,9 +85,9 @@ def solve_instance(mz_instance:SolverInstance,
     if verbose:
         for interm_solution in intermediate_solutions:
             print(interm_solution._output_item)
-    if result.status == Status.OPTIMAL_SOLUTION:
+    if result.status == Status.OPTIMAL_SOLUTION or result.status == Status.SATISFIED:
         if verbose:
-            print("OPTIMAL SOLUTION:")
+            print("FOUND SOLUTION ({}):".format(result.status))
             print("h: {}".format(last_solution.h))
             print("x: {}".format(last_solution.x_positions))
             print("y: {}".format(last_solution.y_positions))
@@ -104,7 +104,7 @@ def solve_instance(mz_instance:SolverInstance,
         summary_writer.write_final_solution(solution, duration)    
         return solution if not return_raw_result else (solution, result)
     else:
-        print("Unfeasible or non-optimal solution after {} seconds".format(duration))
+        print("{} solution after {} seconds".format(result.status, duration))
         if result.status != Status.UNSATISFIABLE:
             solution = SolutionInstance(
                 mz_instance['w'], int(last_solution.h), mz_instance['n'],

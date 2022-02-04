@@ -1,9 +1,9 @@
 {
     "openFiles": [
-        "tests/VLSI-model-test.mzn",
-        "tests/VLSI-model-chuffed.mzn"
+        "VLSI-model.mzn",
+        "tests/VLSI-model-rotation.mzn"
     ],
-    "openTab": 1,
+    "openTab": 0,
     "projectFiles": [
         "../datafiles/ins-1.dzn",
         "../datafiles/ins-10.dzn",
@@ -48,9 +48,8 @@
         "VLSI-model.mzn",
         "solvers/chuffed_42_5min.mpc",
         "solvers/gecode_42_5min.mpc",
-        "tests/VLSI-model-chuffed.mzn",
-        "tests/VLSI-model-test.mzn"
+        "tests/VLSI-model-rotation.mzn"
     ],
-    "selectedSolverConfigFile": "solvers/chuffed_42_5min.mpc",
+    "selectedSolverConfigFile": "solvers/gecode_42_5min.mpc",
     "version": 106
 }
