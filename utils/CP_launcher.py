@@ -35,7 +35,7 @@ def parse_args():
         help="Whether the problem should also allow rotation of circuits.")
     return argpars.parse_args()
 
-class UnfeasibleException(Exception):
+class SubOptimalException(Exception):
     pass
 
 def load_model(model_path:str) -> Model:
@@ -56,8 +56,11 @@ def get_problem_filenames(pattern:str) -> Sequence[str]:
 def get_problem_instance(fn:str) -> ProblemInstance:
     return parse_problem_file(fn)
 
-def get_output_filename(output_path: str, input_fn:str) -> str:
-    return os.path.join(output_path, input_fn.split(os.sep)[-1].replace("ins", "out"))
+def get_output_filename(output_path: str, input_fn:str, rot:bool) -> str:
+    return os.path.join(output_path, input_fn.split(os.sep)[-1].replace(
+        "ins", "out" if not rot else "out-rot")
+    )
+
 
 def solve_instance(mz_instance:SolverInstance, 
                    summary_writer:Summary, filename=None, 
@@ -75,18 +78,17 @@ def solve_instance(mz_instance:SolverInstance,
             intermediate_solutions=True)  # Also return all intermediate solutions
     except MiniZincError as e:
         print("Problem could not be solved: {}".format(e))
-        raise UnfeasibleException()
+        raise SubOptimalException()
     end_time = datetime.now()
     duration = end_time - start_time
     duration = duration.seconds + duration.microseconds*1e-6
-    # Get the solutions
-    intermediate_solutions = result.solution[:-1]
-    last_solution = result.solution[-1]
-    if verbose:
-        for interm_solution in intermediate_solutions:
-            print(interm_solution._output_item)
     if result.status == Status.OPTIMAL_SOLUTION or result.status == Status.SATISFIED:
+        # Get the solutions
+        intermediate_solutions = result.solution[:-1]
+        last_solution = result.solution[-1]
         if verbose:
+            for interm_solution in intermediate_solutions:
+                print(interm_solution._output_item)
             print("FOUND SOLUTION ({}):".format(result.status))
             print("h: {}".format(last_solution.h))
             print("x: {}".format(last_solution.x_positions))
@@ -100,20 +102,17 @@ def solve_instance(mz_instance:SolverInstance,
             [ Circuit(mz_instance["measures"][i][0], mz_instance["measures"][i][1],
                     last_solution.x_positions[i], last_solution.y_positions[i]) 
                     for i in range(mz_instance["n"]) ]
-        )    
-        summary_writer.write_final_solution(solution, duration)    
-        return solution if not return_raw_result else (solution, result)
+        )
+        if last_solution.blanks == 0:
+            summary_writer.write_final_solution(solution, duration)    
+            return solution if not return_raw_result else (solution, result)
+        else:
+            # We have found a sub-optimal solution
+            summary_writer.write_best_found_solution(solution, duration)
+            raise SubOptimalException
+    # Otherwise:
     else:
-        print("{} solution after {} seconds".format(result.status, duration))
-        if result.status != Status.UNSATISFIABLE:
-            solution = SolutionInstance(
-                mz_instance['w'], int(last_solution.h), mz_instance['n'],
-                [   Circuit(mz_instance["measures"][i][0], mz_instance["measures"][i][1],
-                        last_solution.x_positions[i], last_solution.y_positions[i]) 
-                        for i in range(mz_instance["n"])   ]
-            )
-            summary_writer.write_best_found_solution(solution, duration) 
-        raise UnfeasibleException()
+        raise SubOptimalException()
 
 def solve_instance_plus_rotation(mz_instance:SolverInstance,
                                  summary_writer:Summary, filename=None,
@@ -171,12 +170,12 @@ if __name__ == '__main__':
                 solution = solve_instance(mz_instance, summary_writer, filename, verbose=True)
             solved_problems += 1
 
-            out_filename = get_output_filename(args.output_dir, filename)
+            out_filename = get_output_filename(args.output_dir, filename, rot=args.rotation_allowed)
             solution.write_to_file(out_filename)
 
             if args.show:
                 solution.draw()
-        except UnfeasibleException:
+        except SubOptimalException:
             pass
 
     # Close log file
