@@ -21,7 +21,8 @@ class Circuit(IncompleteCircuit):
         self.y1 = self.y0 + self.h
 
     def __str__(self) -> str:
-        return "{}x{} circuit at ({}, {})".format(self.w, self.h, self.x0, self.y0)
+        return "{}x{} circuit at ({}, {})".format(
+            self.w, self.h, self.x0, self.y0)
 
 class SolutionInstance(ProblemInstance):
 
