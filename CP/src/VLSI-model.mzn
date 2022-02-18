@@ -126,43 +126,6 @@ constraint symmetry_breaking_constraint(
                              ( w - x_positions[c] - widths[c]  ) | c in CIRCUITS ])
 )::domain;
 
-
-% OTHER IDEAS AND TODOs
-
-% Another constraint we can post is that along the border of a circuit there must be another circuit
-% (except at the borders of the boards).
-% To facilitate posting this constraint, we should construct another dual view of the model:
-% a matrix of integers, each integer representing a circuit and the number -1 representing
-% the absence of circuits.
-%set of int : OPTIONAL_CIRCUITS = -1..n;
-%array[POSSIBLE_X, POSSIBLE_Y] of var OPTIONAL_CIRCUITS : M;
-% channeling constraints to link the two models
-%constraint forall(c in CIRCUITS) (
-    % Mark for each circuit the positions it occupies
-%    forall( i in x_positions[c]..min(w, x_positions[c]+measures[c,1]),
-%            j in y_positions[c]..min(max_h, y_positions[c]+measures[c,2]) )
-%    ( M[i,j] = c )
-%);
-% The unoccupied positions should be marked with -1
-%constraint forall (i in POSSIBLE_X, j in POSSIBLE_Y) (forall(c in CIRCUITS)
-    % For all positions of the matrix, we check that it does not overlap with any circuit.
-    % Instead of using 
-    % not exists(c in CIRCUITS) ( p(c) )
-    % we use the equivalent
-    % forall (c in CIRCUITS) ( not(p(c)) )
-    % It probably does not change anything, but I'm highly suspicious of existential quantifiers
-    % because poor implementations may lead to posting disjunctions, while forall is certainly
-    % a sequence of conjunctions
-%    (not ( i >= x_positions[c] /\ i < x_positions[c]+measures[c,1] /\
-%           j >= y_positions[c] /\ j < y_positions[c]+measures[c,2] ) )
-%      <-> M[i,j] = -1
-%);
-% These two constraints should be able to fill the whole matrix.
-
-% TODO: for the cost function, think about how we can penalize empty spaces
-% An idea could be using a cost function like: h*w + whitespaces, so the model
-% will try to reduce h since the effect will be stronger
-
 % What is the value of h? It's the maximum between the values of y_positions + h of 
 % circuits
 constraint h = max([y_positions[c] + measures[c,2] | c in CIRCUITS])::domain;
@@ -178,7 +141,7 @@ constraint blanks >= 0::domain;
 % SEARCH
 ann : search_ann = seq_search([
     int_search(y_positions, input_order, indomain_min),     % Try to assign the y_positions, assigning the minimum values to the largest circuits first because we need to minimize height
-    int_search(x_positions, input_order, indomain_min),      % Then assign the min values to x_positions, so to have a compact representation
+    int_search(x_positions, input_order, indomain_min),     % Then assign the min values to x_positions, so to have a compact representation
 ]);
 
 
