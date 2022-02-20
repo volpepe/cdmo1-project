@@ -1,9 +1,10 @@
 {
     "openFiles": [
         "VLSI-model.mzn",
-        "tests/VLSI-model-rotation.mzn"
+        "VLSI-model.mzn",
+        "VLSI-model-rotation.mzn"
     ],
-    "openTab": 0,
+    "openTab": 2,
     "projectFiles": [
         "../datafiles/ins-1.dzn",
         "../datafiles/ins-10.dzn",
@@ -45,10 +46,9 @@
         "../datafiles/ins-7.dzn",
         "../datafiles/ins-8.dzn",
         "../datafiles/ins-9.dzn",
+        "VLSI-model-rotation.mzn",
         "VLSI-model.mzn",
-        "solvers/chuffed_42_5min.mpc",
-        "solvers/gecode_42_5min.mpc",
-        "tests/VLSI-model-rotation.mzn"
+        "solvers/gecode_42_5min.mpc"
     ],
     "selectedSolverConfigFile": "solvers/gecode_42_5min.mpc",
     "version": 106

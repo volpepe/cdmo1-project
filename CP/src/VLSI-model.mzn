@@ -19,14 +19,17 @@ array[CIRCUITS] of int: initial_y;
 
 % Intermediate variable: the maximum height reached in the initial solution
 int: max_h = max([ initial_y[c] + heights[c] | c in CIRCUITS ]);
+% We can also obtain a lower bound for the height of the board in the solution
+% which is given by dividing the sum of the areas of the circuits by W.
+% This lower bound corresponds to the real optimal height when no empty spaces
+% are present between the circuits, otherwise it's always <= than the real height
+int: low_h = floor(sum([ widths[c] * heights[c] | c in CIRCUITS ]) / w);
 
 
 % VARIABLES
 % Height of the plate. 
-% The height is between 0 (no circuits on the plate) and the sum of all
-% heights of all circuits (the case where all circuits are stacked one on top
-% of the other, which provides a worst case scenario).
-var 0..max_h: h;
+% The height is between low_h and max_h, which provides a worst case scenario).
+var low_h..max_h: h;
 % Positions of the circuits
 % The x coordinate is necessarily between 0 and w.
 % The y coordinate is necessarily between 0 and max_h.
@@ -126,19 +129,13 @@ constraint symmetry_breaking_constraint(
                              ( w - x_positions[c] - widths[c]  ) | c in CIRCUITS ])
 )::domain;
 
-% What is the value of h? It's the maximum between the values of y_positions + h of 
+% The value of h is the maximum between the values of y_positions + h of 
 % circuits
 constraint h = max([y_positions[c] + measures[c,2] | c in CIRCUITS])::domain;
-constraint h >= 0::domain;
 
-% Also, another measure of quality is how many blank spaces are present in the model. 
-% If we have w*h possible spaces and the area of each circuit is given by its wc and hc,
-% we can say that the number of blank spaces is:
-var int: blanks;
-constraint blanks = w*h - sum([widths[c]*heights[c] | c in CIRCUITS])::domain;
-constraint blanks >= 0::domain;
-
+%%%%%%%%%%%%%
 % SEARCH
+
 ann : search_ann = seq_search([
     int_search(y_positions, input_order, indomain_min),     % Try to assign the y_positions, assigning the minimum values to the largest circuits first because we need to minimize height
     int_search(x_positions, input_order, indomain_min),     % Then assign the min values to x_positions, so to have a compact representation
@@ -151,6 +148,6 @@ solve :: search_ann ::
          relax_and_reconstruct(transl_pos, 50,     % For large neighbourhood search if we work with gecode: upon restart keep some of the variables fixed
              [ initial_y[c] * w + initial_x[c] | c in CIRCUITS ]      %   to the previous (good) solutions and explore those neighbourhoods.
          )                                         % Also, start from the initial solution.
-         minimize blanks;
+         minimize h;
 
-output ["x_pos=\(x_positions)\ty_pos=\(y_positions)\th=\(h)\ntransl_pos=\(transl_pos)\nblanks=\(blanks)\n"];
+output ["x_pos=\(x_positions)\ty_pos=\(y_positions)\th=\(h)\ntransl_pos=\(transl_pos)\n"];

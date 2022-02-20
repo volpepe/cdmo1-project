@@ -103,7 +103,7 @@ def solve_instance(mz_instance:SolverInstance,
                     last_solution.x_positions[i], last_solution.y_positions[i]) 
                     for i in range(mz_instance["n"]) ]
         )
-        if last_solution.blanks == 0:
+        if duration < 5*60:
             summary_writer.write_final_solution(solution, duration)    
             return solution if not return_raw_result else (solution, result)
         else:
