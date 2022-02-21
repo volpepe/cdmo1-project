@@ -33,7 +33,7 @@ def solve_instance(problem:OptimalVLSI, summary_writer:Summary, filename=None,
     duration = problem.durations['duration_check'] + \
                problem.durations['duration_model']
     if verbose:
-        print("FOUND SOLUTION ({}):".format('OPTIMAL' if not problem.out_of_time() else 'SUB-OPTIMAL'))
+        print("FOUND SOLUTION ({}):".format('OPTIMAL' if not problem.out_of_time(5*60) else 'SUB-OPTIMAL'))
         if not problem.out_of_time(5*60):
             print("h: {}".format(solution.hg))
             print("x: {}".format([solution.circuits[c].x0 for c in range(len(solution.circuits))]))

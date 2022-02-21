@@ -4,6 +4,9 @@ import os
 from datetime import datetime, timedelta
 from minizinc import Instance as SolverInstance, \
     MiniZincError, Model, Solver, Status
+import sys
+sys.path.append(os.path.join(os.getcwd(), 'utils'))
+
 from launcher_utils import get_problem_instance,\
     get_problem_filenames, get_output_filename, SubOptimalException
 from solution import Circuit, SolutionInstance, RotatingSolutionInstance

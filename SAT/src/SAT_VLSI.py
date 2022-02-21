@@ -4,6 +4,8 @@ import re
 import math
 from z3 import *
 
+import sys
+sys.path.append(os.path.join(os.getcwd(), 'utils'))
 from problem import ProblemInstance, parse_problem_file
 from solution import SolutionInstance, Circuit
 from initial_solution import construct_initial_solution

@@ -1,6 +1,8 @@
 import argparse
 import os
 from tqdm import tqdm
+import sys
+sys.path.append(os.path.join(os.getcwd(), 'utils'))
 from initial_solution import construct_initial_solution
 from CP_launcher import get_problem_filenames, get_problem_instance
 

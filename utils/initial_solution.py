@@ -65,7 +65,7 @@ def construct_initial_solution(problem: ProblemInstance) -> SolutionInstance:
 
 
 if __name__ == '__main__':
-    from CP_launcher import get_problem_filenames, get_problem_instance
+    from launcher_utils import get_problem_filenames, get_problem_instance
 
     args = parse_args()
     # Load problem instance
