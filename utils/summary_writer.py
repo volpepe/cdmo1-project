@@ -34,16 +34,18 @@ Solving problem {}.
     def write_best_found_solution(self, solution:SolutionInstance, time):
         text="""------
 Couldn't reach optimal solution in {}.
+""".format(time)
+        if solution is not None:
+            text += """
 Best found solution:
 - Best xs: {}
 - Best ys: {}
 - Best h: {}
 """.format(
-            time, 
-            [c.x0 for c in solution.circuits],
-            [c.y0 for c in solution.circuits],
-            solution.hg
-        )
+        [c.x0 for c in solution.circuits],
+        [c.y0 for c in solution.circuits],
+        solution.hg
+    )
         self.write(text)
 
     def write_final_solution(self, solution:SolutionInstance, time):
@@ -55,5 +57,6 @@ Best found solution:
 """.format(time,
             [c.x0 for c in solution.circuits],
             [c.y0 for c in solution.circuits],
-            solution.hg)
+            solution.hg
+    )
         self.write(text)

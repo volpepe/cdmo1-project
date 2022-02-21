@@ -1,12 +1,11 @@
 import argparse
-import glob
 import pathlib
 import os
 from datetime import datetime, timedelta
-from typing import Sequence
 from minizinc import Instance as SolverInstance, \
     MiniZincError, Model, Solver, Status
-from problem import ProblemInstance, parse_problem_file
+from launcher_utils import get_problem_instance,\
+    get_problem_filenames, get_output_filename, SubOptimalException
 from solution import Circuit, SolutionInstance, RotatingSolutionInstance
 from initial_solution import construct_initial_solution
 from summary_writer import Summary
@@ -35,9 +34,6 @@ def parse_args():
         help="Whether the problem should also allow rotation of circuits.")
     return argpars.parse_args()
 
-class SubOptimalException(Exception):
-    pass
-
 def load_model(model_path:str) -> Model:
     return Model(model_path)
 
@@ -49,18 +45,6 @@ def load_solver(solver_path:str) -> Solver:
 
 def create_minizinc_instance(solver:Solver, model:Model) -> SolverInstance:
     return SolverInstance(solver, model)
-
-def get_problem_filenames(pattern:str) -> Sequence[str]:
-    return [fn for fn in glob.glob(pattern)]
-
-def get_problem_instance(fn:str) -> ProblemInstance:
-    return parse_problem_file(fn)
-
-def get_output_filename(output_path: str, input_fn:str, rot:bool) -> str:
-    return os.path.join(output_path, input_fn.split(os.sep)[-1].replace(
-        "ins", "out" if not rot else "out-rot")
-    )
-
 
 def solve_instance(mz_instance:SolverInstance, 
                    summary_writer:Summary, filename=None, 

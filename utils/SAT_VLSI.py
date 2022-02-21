@@ -1,34 +1,13 @@
 from itertools import combinations
 import time
-import sys
-import os
 import re
 import math
 from z3 import *
 
-sys.path.append(os.path.join(os.getcwd(), 'utils'))
 from problem import ProblemInstance, parse_problem_file
 from solution import SolutionInstance, Circuit
 from initial_solution import construct_initial_solution
-
-# Define complex constraints
-def at_least_one(bool_vars):
-    return Or(bool_vars)
-
-def at_most_one(bool_vars):
-    return [Not(And(pair[0], pair[1])) for pair in combinations(bool_vars, 2)]
-
-def exactly_one(solver, bool_vars):
-    solver.add(at_most_one(bool_vars))
-    solver.add(at_least_one(bool_vars))
-
-def index_orders(var, c1, c2):
-    if c1 == c2:
-        raise ValueError
-    if c2 > c1:
-        return var[c1][c2-1]
-    else:
-        return var[c1][c2]
+from z3_utils import exactly_one, index_orders, at_least_one
 
 class OptimalVLSI():
     def __init__(self, instance:ProblemInstance):
@@ -37,7 +16,9 @@ class OptimalVLSI():
         self.n = self.inst.n
         self.W = self.inst.wg
         # Initial solution
+        start_init_sol = time.time()
         self.init_inst = construct_initial_solution(self.inst)
+        end_init_sol = time.time()
         # Upper and lower bounds for height
         self.low_h = math.floor(sum([self.get_ch(circ)*self.get_cw(circ) 
             for circ in range(self.n)]) / self.W)
@@ -50,6 +31,7 @@ class OptimalVLSI():
         self.ph = {int(o): Bool(f'ph_{o}') for o in range(self.low_h, self.max_h+1)}
         # Variable to keep all kinds of times into check
         self.durations = {
+            'duration_initial_solution': end_init_sol - start_init_sol,
             'duration_check': 0.0,
             'duration_model': 0.0,
             'duration_solution_creation': 0.0
@@ -333,14 +315,14 @@ class OptimalVLSI():
         return self.inst.circuits[circ].h
 
 
-if __name__ == '__main__':
-    for i in range(10,16):
+if __name__ == '__main__':    
+    for i in range(10,11):
         print(f"Solving instance {i}")
         inst = parse_problem_file(f'instances/ins-{i}.txt')
-        VLSI_problem = OptimalVLSI(inst)
-        solution = VLSI_problem.solve_optimally(draw_best=True)
+        problem = OptimalVLSI(inst)
+        solution = problem.solve_optimally(draw_best=True)
         print("Durations for solving:")
-        print(VLSI_problem.durations)
+        print(problem.durations)
         print("Total solving time (algorithm overhead not counted): {} seconds".\
-            format(VLSI_problem.durations['duration_check'] + VLSI_problem.durations['duration_solution_creation']))
+            format(problem.durations['duration_check'] + problem.durations['duration_solution_creation']))
         print("=======================")
