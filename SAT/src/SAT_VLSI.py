@@ -4,7 +4,6 @@ import sys
 import os
 import re
 import math
-from tracemalloc import start
 from z3 import *
 
 sys.path.append(os.path.join(os.getcwd(), 'utils'))
@@ -83,68 +82,94 @@ class OptimalVLSI():
 
         # C)
         for ci, cj in combinations(range(self.n), 2):
-            # One must be before the other in some way
+
+            # One must be before or above the other in some way
             self.s.add(Or(
                 index_orders(self.lr, ci, cj),
                 index_orders(self.lr, cj, ci),
                 index_orders(self.ud, ci, cj),
                 index_orders(self.ud, cj, ci)
             ))
-            # The complex constraint specified above:
-            #### HORIZONTAL ####
-            # If i is before j, then px[cj] cannot be before ci_w
-            for e in range(self.get_cw(ci)):
+
+            # SAME RECTANGLES REDUCTION:
+            # If two rectangles have the same dimension, we can fix the positional
+            # relation between them (eg. programmatically decide that one is on the
+            # left - or if it doesn't apply - above the other.
+            if  (self.get_ch(ci) == self.get_ch(cj)) and \
+                (self.get_cw(ci) == self.get_cw(cj)):
+                self.s.add(Not(index_orders(self.lr, cj, ci)))
                 self.s.add(Or(
-                    Not(index_orders(self.lr, ci, cj)),
-                    Not(self.px[cj][e])
+                    index_orders(self.lr, ci, cj), 
+                    Not(index_orders(self.ud, cj, ci))
                 ))
-            # Then, we pose the full constraint
-            for e in range(self.W-self.get_cw(ci)):
-                self.s.add(Or(
-                    Not(index_orders(self.lr, ci, cj)), 
-                    self.px[ci][e],
-                    Not(self.px[cj][e+self.get_cw(ci)])
-                ))
-            # If j is before i, then px[ci] cannot be before cj_w
-            for e in range(self.get_cw(cj)):
-                self.s.add(Or(
-                    Not(index_orders(self.lr, cj, ci)),
-                    Not(self.px[ci][e])
-                ))
-            # Then, we have the full constraint
-            for e in range(self.W-self.get_cw(cj)):
-                self.s.add(Or(
-                    Not(index_orders(self.lr, cj, ci)), 
-                    self.px[cj][e],
-                    Not(self.px[ci][e+self.get_cw(cj)])
-                ))
-            #### VERTICAL ####
-            # If i is above j, then px[cj] cannot be before ci_w
-            for f in range(self.get_ch(ci)):
-                self.s.add(Or(
-                    Not(index_orders(self.ud, ci, cj)),
-                    Not(self.py[cj][f])
-                ))
-            # Then, we have the full constraint
-            for f in range(self.max_h-self.get_ch(ci)):
-                self.s.add(Or(
-                    Not(index_orders(self.ud, ci, cj)), 
-                    self.py[ci][f],
-                    Not(self.py[cj][f+self.get_ch(ci)])
-                ))
-            # If j is above i, then py[ci] cannot be before cj_h
-            for f in range(self.get_ch(cj)):
-                self.s.add(Or(
-                    Not(index_orders(self.ud, cj, ci)),
-                    Not(self.py[ci][f])
-                ))
-            # Then, we have the full constraint
-            for f in range(self.max_h-self.get_ch(cj)):
-                self.s.add(Or(
-                    Not(index_orders(self.ud, cj, ci)), 
-                    self.py[cj][f],
-                    Not(self.py[ci][f+self.get_ch(cj)])
-                ))
+
+            # LARGE RECTANGLES REDUCTION:
+            # If the width of the two circuits (wi + wj) is greater than 
+            # W, then they cannot be placed on the left/right of each other.
+            # So, we can assign lr[i,j] and lr[j,i] = False and remove all of
+            # the horizontal constraints. The same is true on the vertical axis.
+            if self.get_cw(ci) + self.get_cw(cj) > self.W:
+                self.s.add(Not(index_orders(self.lr, ci, cj)))
+                self.s.add(Not(index_orders(self.lr, cj, ci)))
+            else:
+                #### HORIZONTAL ####
+                # If i is before j, then px[cj] cannot be before ci_w
+                for e in range(self.get_cw(ci)):
+                    self.s.add(Or(
+                        Not(index_orders(self.lr, ci, cj)),
+                        Not(self.px[cj][e])
+                    ))
+                # Then, we pose the full constraint
+                for e in range(self.W-self.get_cw(ci)):
+                    self.s.add(Or(
+                        Not(index_orders(self.lr, ci, cj)), 
+                        self.px[ci][e],
+                        Not(self.px[cj][e+self.get_cw(ci)])
+                    ))
+                # If j is before i, then px[ci] cannot be before cj_w
+                for e in range(self.get_cw(cj)):
+                    self.s.add(Or(
+                        Not(index_orders(self.lr, cj, ci)),
+                        Not(self.px[ci][e])
+                    ))
+                # Then, we have the full constraint
+                for e in range(self.W-self.get_cw(cj)):
+                    self.s.add(Or(
+                        Not(index_orders(self.lr, cj, ci)), 
+                        self.px[cj][e],
+                        Not(self.px[ci][e+self.get_cw(cj)])
+                    ))
+            if self.get_ch(ci) + self.get_ch(cj) > self.max_h:
+                self.s.add(Not(index_orders(self.ud, ci, cj)))
+                self.s.add(Not(index_orders(self.ud, cj, ci)))
+            else:
+                #### VERTICAL ####
+                # If i is above j, then px[cj] cannot be before ci_w
+                for f in range(self.get_ch(ci)):
+                    self.s.add(Or(
+                        Not(index_orders(self.ud, ci, cj)),
+                        Not(self.py[cj][f])
+                    ))
+                # Then, we have the full constraint
+                for f in range(self.max_h-self.get_ch(ci)):
+                    self.s.add(Or(
+                        Not(index_orders(self.ud, ci, cj)), 
+                        self.py[ci][f],
+                        Not(self.py[cj][f+self.get_ch(ci)])
+                    ))
+                # If j is above i, then py[ci] cannot be before cj_h
+                for f in range(self.get_ch(cj)):
+                    self.s.add(Or(
+                        Not(index_orders(self.ud, cj, ci)),
+                        Not(self.py[ci][f])
+                    ))
+                # Then, we have the full constraint
+                for f in range(self.max_h-self.get_ch(cj)):
+                    self.s.add(Or(
+                        Not(index_orders(self.ud, cj, ci)), 
+                        self.py[cj][f],
+                        Not(self.py[ci][f+self.get_ch(cj)])
+                    ))
 
         # D)
         for o in self.ph:
@@ -309,11 +334,11 @@ class OptimalVLSI():
 
 
 if __name__ == '__main__':
-    for i in range(1,21):
+    for i in range(10,16):
         print(f"Solving instance {i}")
         inst = parse_problem_file(f'instances/ins-{i}.txt')
         VLSI_problem = OptimalVLSI(inst)
-        solution = VLSI_problem.solve_optimally_no_assumptions(draw_best=True)
+        solution = VLSI_problem.solve_optimally(draw_best=True)
         print("Durations for solving:")
         print(VLSI_problem.durations)
         print("Total solving time (algorithm overhead not counted): {} seconds".\
