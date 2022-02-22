@@ -41,30 +41,30 @@ class OptimalVLSI():
         # Solver for the problem
         self.s = Solver()
         self.add_main_constraints()
+        self.add_initial_solution()
 
     def add_main_constraints(self):
-        # A)
         # For each circuit, there must be at least a px and a py variable
-        # that is true. Furthermore, the px and py variables are ordered 
+        # that is true such that the circuit is not placed out of bounds. 
+        # Furthermore, we must pose the ordering integrity constraint
         for circ in range(self.n):
-            # The circuit should be placed somewhere
+            # The circuit should be placed somewhere within the possible positions
             self.s.add(at_least_one([self.px[circ][e] 
                 for e in range(self.W-self.get_cw(circ)+1)]))
             self.s.add(at_least_one([self.py[circ][f] 
                 for f in range(self.max_h-self.get_ch(circ)+1)]))
-            # The above conditions ensuring order
+            # The ordering integrity conditions
             self.s.add([Or(Not(self.px[circ][e]), self.px[circ][e+1]) 
                 for e in range(self.W-self.get_cw(circ))])
             self.s.add([Or(Not(self.py[circ][f]), self.py[circ][f+1]) 
                 for f in range(self.max_h-self.get_ch(circ))])
 
-        # B)
-        # There is exactly one circuit at (0,0)
+        # There is exactly one circuit placed at (0,0)
         exactly_one(self.s, [
             And(self.px[circ][0], self.py[circ][0]) for circ in range(self.n)
         ])
 
-        # C)
+        # Constraints on pairs of circuits
         for ci, cj in combinations(range(self.n), 2):
 
             # One must be before or above the other in some way
@@ -155,7 +155,9 @@ class OptimalVLSI():
                         Not(self.py[ci][f+self.get_ch(cj)])
                     ))
 
-        # D)
+        # At any level, ph,i true means that all circuits must be
+        # placed before i - h_c. Furthermore, we also have the ordering
+        # integrity constraint.
         for o in self.ph:
             self.s.add([Or(
                 Not(self.ph[o]),
@@ -163,6 +165,25 @@ class OptimalVLSI():
             ) for ci in range(self.n)])
             if o < self.max_h:
                 self.s.add(Or(Not(self.ph[o]), self.ph[o+1]))
+
+    def add_initial_solution(self):
+        # We have obtained the upper bound for height using the initial solution,
+        # so ph at the maximum height is definitely true
+        self.s.add(self.ph[self.max_h])
+        # For each circuit, we add the initial positions. We do this by saying that 
+        # when the optimal height is max_h, the solution is the provided one.
+        try:
+            self.s.add(Implies(And(self.ph[self.max_h], Not(self.ph[self.max_h-1])), 
+            And([
+                And([self.px[circ][e] for e in range(
+                    self.init_inst.circuits[circ].x0, self.W
+                )] + [self.py[circ][f] for f in range(
+                    self.init_inst.circuits[circ].y0, self.max_h
+                )])
+                for circ in range(self.n)
+            ])))
+        except KeyError:
+            pass
 
     def obtain_solution(self, verbose=False):
         # If SAT, construct the solution
