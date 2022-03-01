@@ -1,11 +1,15 @@
 import argparse
 import os
+from typing import Union
 
-from solution import SolutionInstance
+import sys
+sys.path.append(os.path.join(os.getcwd(), 'utils'))
+from solution import SolutionInstance, RotatingSolutionInstance
 from summary_writer import Summary
 from launcher_utils import SubOptimalException, get_problem_filenames,\
     get_problem_instance, get_output_filename
 from SAT_VLSI import OptimalVLSI
+from SAT_VLSI_rotation import OptimalVLSI as OptimalVLSIRotation
 
 def parse_args():
     argpars = argparse.ArgumentParser()
@@ -19,17 +23,20 @@ def parse_args():
         help="Use this flag to show the solution after each solved problem")
     argpars.add_argument("--output_log", "-log", type=str,
         help="Path to log file", default=os.path.join("SAT","out","log.txt"))
+    argpars.add_argument("--rotation_allowed", "-rot", action="store_true",
+        help="Whether the problem should also allow rotation of circuits.")
     return argpars.parse_args()
 
 
-def solve_instance(problem:OptimalVLSI, summary_writer:Summary, filename=None, 
-    verbose=False) -> SolutionInstance:
+def solve_instance(problem, 
+    summary_writer:Summary, filename=None, 
+    verbose=False) -> Union[SolutionInstance,RotatingSolutionInstance]:
     # Solve
     if verbose:
         print("=========================================================")
         print("Solving problem {}...".format(filename))
         print()
-    solution = problem.solve_optimally(draw_best=False)
+    solution = problem.solve_optimally_no_assumptions(draw_best=False)
     duration = problem.durations['duration_check'] + \
                problem.durations['duration_model']
     if verbose:
@@ -71,7 +78,7 @@ if __name__ == '__main__':
         # Get instance of the problem (with sorted circuits order)
         problem = get_problem_instance(filename) 
         # Initialize the problem
-        vlsi_instance = OptimalVLSI(problem)
+        vlsi_instance = OptimalVLSI(problem) if not args.rotation_allowed else OptimalVLSIRotation(problem)
         # Write on log writer
         summary_writer.init_problem(filename, problem)
         summary_writer.write_initial_solution(vlsi_instance.init_inst, 
@@ -80,7 +87,7 @@ if __name__ == '__main__':
             solution = solve_instance(vlsi_instance, summary_writer, 
                 filename, verbose=True)
             solved_problems += 1
-            out_filename = get_output_filename(args.output_dir, filename, rot=False)
+            out_filename = get_output_filename(args.output_dir, filename, rot=args.rotation_allowed)
             solution.write_to_file(out_filename)
             if args.show:
                 solution.draw()

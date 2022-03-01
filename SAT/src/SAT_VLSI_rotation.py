@@ -2,10 +2,10 @@ from itertools import combinations
 import time
 import re
 import math
+import random
 from z3 import *
 
 import sys
-
 sys.path.append(os.path.join(os.getcwd(), 'utils'))
 from problem import ProblemInstance, parse_problem_file
 from solution import RotatingSolutionInstance, Circuit
@@ -49,6 +49,9 @@ class OptimalVLSI():
         self.add_main_constraints()
         self.add_initial_solution()
 
+    def can_rotate(self, circuit):
+        return (self.get_ch(circuit) <= self.W) and (self.get_cw(circuit) <= self.max_h)
+
     def add_main_constraints(self):
         # For each circuit, there must be at least a px and a py variable
         # that is true such that the circuit is not placed out of bounds. 
@@ -80,7 +83,7 @@ class OptimalVLSI():
             ##### ROTATION
             # Circuits whose height is greater than W or whose width is greater than maxh
             # cannot be rotated
-            if (self.get_ch(circ) > self.W) or (self.get_cw(circ) > self.max_h):
+            if not self.can_rotate(circ):
                 self.s.add(Not(self.rot[circ]))
             # Rotating a circuit whose height is equal to its width is pointless
             if self.get_ch(circ) == self.get_cw(circ):
@@ -91,8 +94,15 @@ class OptimalVLSI():
             And(self.px[circ][0], self.py[circ][0]) for circ in range(self.n)
         ])
 
+        rectangle_pairs = combinations(range(self.n), 2)
+        # Decide a random pair for activating the one-pair fixed ordering reduction that breaks
+        # symmetry
+        random_pair_for_reduction = random.randrange(0, 
+            sum(1 for _,_ in combinations(range(self.n), 2)))
+        counter = 0
+
         # Constraints on pairs of circuits
-        for ci, cj in combinations(range(self.n), 2):
+        for ci, cj in rectangle_pairs:
 
             # One must be before or above the other in some way
             self.s.add(Or(
@@ -114,6 +124,16 @@ class OptimalVLSI():
                     Not(index_orders(self.ud, cj, ci))
                 ))
 
+            # ONE PAIR OF RECTANGLES
+            # We impose an ordering between a pair of rectangles. In this
+            # way, all total flippings are broken because the ordering 
+            # must be respected.
+            if counter == random_pair_for_reduction:
+                self.s.add(Not(index_orders(self.lr, cj, ci)))
+                self.s.add(Not(index_orders(self.ud, cj, ci)))
+            
+            counter += 1
+
             # The rotation makes it impossible to apply the large rectangle reduction
             # because we don't know how are circuits rotated and thus what is their 
             # current width            
@@ -124,42 +144,46 @@ class OptimalVLSI():
                 Not(index_orders(self.lr, ci, cj)),
                 Not(self.px[cj][e])
             ) for e in range(self.get_cw(ci))])))
-            self.s.add(Implies(self.rot[ci], And([Or(
-                Not(index_orders(self.lr, ci, cj)),
-                Not(self.px[cj][e])
-            ) for e in range(self.get_ch(ci))])))
             # Then, we pose the full constraint
             self.s.add(Implies(Not(self.rot[ci]), And([Or(
                 Not(index_orders(self.lr, ci, cj)), 
                 self.px[ci][e],
                 Not(self.px[cj][e+self.get_cw(ci)])
             ) for e in range(self.W-self.get_cw(ci))])))
-            self.s.add(Implies(self.rot[ci], And([Or(
-                Not(index_orders(self.lr, ci, cj)), 
-                self.px[ci][e],
-                Not(self.px[cj][e+self.get_ch(ci)])
-            ) for e in range(self.W-self.get_ch(ci))])))
+
+            if self.can_rotate(ci):
+                self.s.add(Implies(self.rot[ci], And([Or(
+                    Not(index_orders(self.lr, ci, cj)),
+                    Not(self.px[cj][e])
+                ) for e in range(self.get_ch(ci))])))
+                self.s.add(Implies(self.rot[ci], And([Or(
+                    Not(index_orders(self.lr, ci, cj)), 
+                    self.px[ci][e],
+                    Not(self.px[cj][e+self.get_ch(ci)])
+                ) for e in range(self.W-self.get_ch(ci))])))
 
             # If j is before i, then px[ci] cannot be before cj_w
             self.s.add(Implies(Not(self.rot[cj]), And([Or(
                 Not(index_orders(self.lr, cj, ci)),
                 Not(self.px[ci][e])
             ) for e in range(self.get_cw(cj))])))
-            self.s.add(Implies(self.rot[cj], And([Or(
-                Not(index_orders(self.lr, cj, ci)),
-                Not(self.px[ci][e])
-            ) for e in range(self.get_ch(cj))])))
             # Then, we pose the full constraint
             self.s.add(Implies(Not(self.rot[cj]), And([Or(
                 Not(index_orders(self.lr, cj, ci)), 
                 self.px[cj][e],
                 Not(self.px[ci][e+self.get_cw(cj)])
             ) for e in range(self.W-self.get_cw(cj))])))
-            self.s.add(Implies(self.rot[cj], And([Or(
-                Not(index_orders(self.lr, cj, ci)), 
-                self.px[cj][e],
-                Not(self.px[ci][e+self.get_ch(cj)])
-            ) for e in range(self.W-self.get_ch(cj))])))
+            
+            if self.can_rotate(cj):
+                self.s.add(Implies(self.rot[cj], And([Or(
+                    Not(index_orders(self.lr, cj, ci)),
+                    Not(self.px[ci][e])
+                ) for e in range(self.get_ch(cj))])))
+                self.s.add(Implies(self.rot[cj], And([Or(
+                    Not(index_orders(self.lr, cj, ci)), 
+                    self.px[cj][e],
+                    Not(self.px[ci][e+self.get_ch(cj)])
+                ) for e in range(self.W-self.get_ch(cj))])))
 
             #### VERTICAL ####
             # If i is above j, then px[cj] cannot be before ci_w
@@ -167,42 +191,46 @@ class OptimalVLSI():
                 Not(index_orders(self.ud, ci, cj)),
                 Not(self.py[cj][f])
             ) for f in range(self.get_ch(ci))])))
-            self.s.add(Implies(self.rot[ci], And([Or(
-                Not(index_orders(self.ud, ci, cj)),
-                Not(self.py[cj][f])
-            ) for f in range(self.get_cw(ci))])))
             # Then, we pose the full constraint
             self.s.add(Implies(Not(self.rot[ci]), And([Or(
                 Not(index_orders(self.ud, ci, cj)), 
                 self.py[ci][f],
                 Not(self.py[cj][f+self.get_ch(ci)])
             ) for f in range(self.max_h-self.get_ch(ci))])))
-            self.s.add(Implies(self.rot[ci], And([Or(
-                Not(index_orders(self.ud, ci, cj)), 
-                self.py[ci][f],
-                Not(self.py[cj][f+self.get_cw(ci)])
-            ) for f in range(self.max_h-self.get_cw(ci))])))
+
+            if self.can_rotate(ci):
+                self.s.add(Implies(self.rot[ci], And([Or(
+                    Not(index_orders(self.ud, ci, cj)),
+                    Not(self.py[cj][f])
+                ) for f in range(self.get_cw(ci))])))
+                self.s.add(Implies(self.rot[ci], And([Or(
+                    Not(index_orders(self.ud, ci, cj)), 
+                    self.py[ci][f],
+                    Not(self.py[cj][f+self.get_cw(ci)])
+                ) for f in range(self.max_h-self.get_cw(ci))])))
 
             # If j is before i, then px[ci] cannot be before cj_w
             self.s.add(Implies(Not(self.rot[cj]), And([Or(
                 Not(index_orders(self.ud, cj, ci)),
                 Not(self.py[ci][f])
             ) for f in range(self.get_ch(cj))])))
-            self.s.add(Implies(self.rot[cj], And([Or(
-                Not(index_orders(self.ud, cj, ci)),
-                Not(self.py[ci][f])
-            ) for f in range(self.get_cw(cj))])))
             # Then, we pose the full constraint
             self.s.add(Implies(Not(self.rot[cj]), And([Or(
                 Not(index_orders(self.ud, cj, ci)), 
                 self.py[cj][f],
                 Not(self.py[ci][f+self.get_ch(cj)])
             ) for f in range(self.max_h-self.get_ch(cj))])))
-            self.s.add(Implies(self.rot[cj], And([Or(
-                Not(index_orders(self.ud, cj, ci)), 
-                self.py[cj][f],
-                Not(self.py[ci][f+self.get_cw(cj)])
-            ) for f in range(self.max_h-self.get_cw(cj))])))
+        
+            if self.can_rotate(cj):
+                self.s.add(Implies(self.rot[cj], And([Or(
+                    Not(index_orders(self.ud, cj, ci)),
+                    Not(self.py[ci][f])
+                ) for f in range(self.get_cw(cj))])))
+                self.s.add(Implies(self.rot[cj], And([Or(
+                    Not(index_orders(self.ud, cj, ci)), 
+                    self.py[cj][f],
+                    Not(self.py[ci][f+self.get_cw(cj)])
+                ) for f in range(self.max_h-self.get_cw(cj))])))
 
         # At any level, ph,i true means that all circuits must be
         # placed before i - h_c (or i - w_c if rotated). 
@@ -405,7 +433,7 @@ class OptimalVLSI():
 
 
 if __name__ == '__main__':    
-    for i in range(2, 10):
+    for i in range(35, 40):
         print(f"Solving instance {i}")
         inst = parse_problem_file(f'instances/ins-{i}.txt')
         problem = OptimalVLSI(inst)

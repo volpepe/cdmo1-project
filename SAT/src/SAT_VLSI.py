@@ -2,6 +2,7 @@ from itertools import combinations
 import time
 import re
 import math
+import random
 from z3 import *
 
 import sys
@@ -64,8 +65,15 @@ class OptimalVLSI():
             And(self.px[circ][0], self.py[circ][0]) for circ in range(self.n)
         ])
 
+        rectangle_pairs = combinations(range(self.n), 2)
+        # Decide a random pair for activating the one-pair fixed ordering reduction that breaks
+        # symmetry
+        random_pair_for_reduction = random.randrange(0, 
+            sum(1 for _,_ in combinations(range(self.n), 2)))
+        counter = 0
+
         # Constraints on pairs of circuits
-        for ci, cj in combinations(range(self.n), 2):
+        for ci, cj in rectangle_pairs:
 
             # One must be before or above the other in some way
             self.s.add(Or(
@@ -86,6 +94,16 @@ class OptimalVLSI():
                     index_orders(self.lr, ci, cj), 
                     Not(index_orders(self.ud, cj, ci))
                 ))
+
+            # ONE PAIR OF RECTANGLES
+            # We impose an ordering between a pair of rectangles. In this
+            # way, all total flippings are broken because the ordering 
+            # must be respected.
+            if counter == random_pair_for_reduction:
+                self.s.add(Not(index_orders(self.lr, cj, ci)))
+                self.s.add(Not(index_orders(self.ud, cj, ci)))
+            
+            counter += 1
 
             # LARGE RECTANGLES REDUCTION:
             # If the width of the two circuits (wi + wj) is greater than 
@@ -339,7 +357,7 @@ class OptimalVLSI():
 
 
 if __name__ == '__main__':    
-    for i in range(10,11):
+    for i in range(1,20):
         print(f"Solving instance {i}")
         inst = parse_problem_file(f'instances/ins-{i}.txt')
         problem = OptimalVLSI(inst)
