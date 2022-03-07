@@ -26,19 +26,20 @@ def max_z3(vars):
         Max = If(v > Max, v, Max)
     return Max
 
-def cumulative_z3(start_times, durations, res_requirements, bound):
+def cumulative_z3(start_times, durations, res_requirements, bound, place_lb, place_ub):
     '''
-    Cumulative constraint for Z3: we iterate over all possible times within bound
-    and for each time we check which tasks are involved by considering the start and
-    end times for each task. For all involved tasks, we sum their resource requirements
-    and constraint it to be below the fixed bound.
+    Cumulative constraint for Z3: we iterate over all possible times within the provided
+    lower and upper bound for the placement of the circuits and for each time we check 
+    which tasks are involved by considering the start and end times for each task. 
+    For all involved tasks, we sum their resource requirements and constrain their sum to 
+    be below the fixed bound.
     '''
     return [Sum([           # Sum over times in bound
                 If(And(start_times[i] <= t, t < start_times[i] + durations[i]), res_requirements[i], 0) 
                 for i in range(len(start_times))]) <= bound
-            for t in res_requirements]
+            for t in range(place_lb, place_ub)]
 
-def lex_lessex_z3(vars1, vars2):
+def lex_leq_z3(vars1, vars2):
     constraints = [vars1[0] <= vars2[0]]
     for i in range(1, len(vars1)-1):
         constraints.append(Implies(vars1[i] == vars2[i], vars1[i+1] <= vars2[i+1]))

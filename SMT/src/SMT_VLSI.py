@@ -3,7 +3,6 @@ import time
 import re
 import math
 import random
-from tracemalloc import start
 from z3 import *
 
 from typing import Tuple, Dict
@@ -14,7 +13,7 @@ sys.path.append(os.path.join(BASE_PATH, 'utils'))
 from problem import ProblemInstance, parse_problem_file
 from solution import SolutionInstance, Circuit
 from initial_solution import construct_initial_solution
-from z3_utils import exactly_one, cumulative_z3, lex_lessex_z3, max_z3
+from z3_utils import exactly_one, cumulative_z3, lex_leq_z3, max_z3
 
 class OptimalVLSI():
     def __init__(self, instance:ProblemInstance):
@@ -56,8 +55,10 @@ class OptimalVLSI():
         for circ in range(self.n):
             self.opt.add(And(0 <= self.cx[circ], self.cx[circ] <= self.W - self.cw[circ]))
             self.opt.add(And(0 <= self.cy[circ], self.cy[circ] <= self.h - self.ch[circ]))
-            self.opt.add(And(self.low_h <= self.h, self.h <= self.max_h))
             self.opt.add(self.transl_pos[circ] == self.cy[circ] * self.W + self.cx[circ])
+
+        # We also express the bounds for variable h
+        self.opt.add(And(self.low_h <= self.h, self.h <= self.max_h))
 
         # All translated positions must be different
         self.opt.add(Distinct(self.transl_pos))
@@ -75,20 +76,20 @@ class OptimalVLSI():
             ))
 
         # Cumulative constraint
-        self.opt.add(cumulative_z3(self.cy, self.ch, self.cw, self.W))
-        self.opt.add(cumulative_z3(self.cx, self.cw, self.ch, self.h))
+        self.opt.add(cumulative_z3(self.cy, self.ch, self.cw, self.W, 0, self.max_h))
+        self.opt.add(cumulative_z3(self.cx, self.cw, self.ch, self.h, 0, self.W))
         
         ## Symmetry breaking
         self.opt.add([
-            lex_lessex_z3(self.transl_pos, [self.cy[c]*self.W+
-                                           (self.W-self.cx[c]-self.cw[c]) 
-                                           for c in range(self.n)]),
-            lex_lessex_z3(self.transl_pos, [(self.h-self.cy[c]*self.ch[c])*self.W+
-                                            self.cx[c] 
-                                            for c in range(self.n)]),
-            lex_lessex_z3(self.transl_pos, [(self.h-self.cy[c]-self.ch[c])*self.W+
-                                            (self.W-self.cx[c]-self.cw[c]) 
-                                            for c in range(self.n)])
+            lex_leq_z3(self.transl_pos, [self.cy[c]*self.W+
+                                        (self.W-self.cx[c]-self.cw[c]) 
+                                        for c in range(self.n)]),
+            lex_leq_z3(self.transl_pos, [(self.h-self.cy[c]*self.ch[c])*self.W+
+                                         self.cx[c] 
+                                         for c in range(self.n)]),
+            lex_leq_z3(self.transl_pos, [(self.h-self.cy[c]-self.ch[c])*self.W+
+                                         (self.W-self.cx[c]-self.cw[c]) 
+                                         for c in range(self.n)])
         ])
 
         ## Definition of the height variable
