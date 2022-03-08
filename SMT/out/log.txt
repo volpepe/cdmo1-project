@@ -7,51 +7,51 @@ Solving problem .\instances\ins-1.txt.
 - Starting ys: [0, 0, 5, 5]
 - Starting h: 8
 ------
-- Final solution found in 0.008001089096069336 seconds.
-- Final xs: [0, 5, 3, 0]
-- Final ys: [0, 0, 5, 5]
+- Final solution found in 0.044004201889038086 seconds.
+- Final xs: [0, 5, 0, 5]
+- Final ys: [0, 3, 5, 0]
 - Optimal h: 8
 
 ============================
 Solving problem .\instances\ins-10.txt.
 - Max width: 17.
 - Circuits: 12.
-- Initial solution found in 0.0010013580322265625 seconds.
+- Initial solution found in 0.0 seconds.
 - Starting xs: [0, 4, 11, 0, 3, 6, 9, 0, 3, 6, 9, 13]
 - Starting ys: [0, 0, 0, 14, 14, 14, 14, 23, 23, 23, 23, 23]
 - Starting h: 29
 ------
-- Final solution found in 1.5299203395843506 seconds.
-- Final xs: [0, 7, 4, 14, 14, 8, 0, 11, 11, 8, 4, 4]
-- Final ys: [0, 11, 0, 0, 9, 0, 14, 5, 0, 7, 8, 11]
+- Final solution found in 1.698000192642212 seconds.
+- Final xs: [3, 7, 7, 14, 0, 11, 0, 0, 14, 11, 7, 14]
+- Final ys: [0, 11, 0, 3, 0, 4, 14, 8, 12, 0, 8, 0]
 - Optimal h: 17
 
 ============================
 Solving problem .\instances\ins-11.txt.
 - Max width: 18.
 - Circuits: 16.
-- Initial solution found in 0.0 seconds.
+- Initial solution found in 0.00099945068359375 seconds.
 - Starting xs: [0, 3, 6, 11, 0, 3, 7, 10, 0, 5, 8, 12, 0, 5, 8, 12]
 - Starting ys: [0, 0, 0, 0, 11, 11, 11, 11, 19, 19, 19, 19, 25, 25, 25, 25]
 - Starting h: 29
 ------
-- Final solution found in 11.960890769958496 seconds.
-- Final xs: [5, 15, 0, 0, 15, 8, 9, 11, 0, 12, 5, 8, 0, 12, 5, 12]
-- Final ys: [0, 0, 3, 13, 10, 5, 11, 0, 9, 8, 11, 0, 0, 14, 15, 5]
+- Final solution found in 7.46099853515625 seconds.
+- Final xs: [7, 0, 13, 13, 0, 3, 10, 3, 13, 10, 3, 10, 13, 7, 6, 3]
+- Final ys: [0, 0, 12, 4, 10, 5, 6, 0, 0, 0, 11, 13, 9, 11, 15, 15]
 - Optimal h: 18
 
 ============================
 Solving problem .\instances\ins-12.txt.
 - Max width: 19.
 - Circuits: 14.
-- Initial solution found in 0.0009992122650146484 seconds.
+- Initial solution found in 0.0009999275207519531 seconds.
 - Starting xs: [0, 3, 6, 9, 13, 16, 0, 3, 7, 10, 14, 0, 3, 6]
 - Starting ys: [0, 0, 0, 0, 0, 0, 19, 19, 19, 19, 19, 27, 27, 27]
 - Starting h: 32
 ------
-- Final solution found in 5.130927324295044 seconds.
-- Final xs: [0, 16, 3, 6, 10, 10, 3, 6, 13, 6, 16, 13, 13, 13]
-- Final ys: [0, 0, 8, 11, 0, 10, 0, 0, 5, 6, 13, 0, 15, 12]
+- Final solution found in 5.454393148422241 seconds.
+- Final xs: [4, 10, 7, 0, 16, 13, 7, 0, 13, 0, 10, 16, 16, 13]
+- Final ys: [0, 0, 0, 5, 5, 0, 11, 13, 9, 0, 13, 0, 15, 16]
 - Optimal h: 19
 
 ============================
@@ -63,23 +63,23 @@ Solving problem .\instances\ins-13.txt.
 - Starting ys: [0, 0, 0, 0, 0, 17, 17, 17, 17, 17, 17, 27, 27, 27]
 - Starting h: 31
 ------
-- Final solution found in 5.697762727737427 seconds.
-- Final xs: [7, 11, 0, 0, 14, 17, 14, 4, 4, 17, 4, 17, 7, 11]
-- Final ys: [0, 0, 0, 11, 0, 0, 11, 12, 0, 14, 7, 10, 17, 17]
+- Final solution found in 4.366367340087891 seconds.
+- Final xs: [3, 10, 16, 13, 13, 0, 17, 7, 7, 0, 7, 0, 3, 10]
+- Final ys: [0, 0, 0, 11, 0, 4, 11, 7, 0, 14, 15, 0, 17, 17]
 - Optimal h: 20
 
 ============================
 Solving problem .\instances\ins-14.txt.
 - Max width: 21.
 - Circuits: 15.
-- Initial solution found in 0.00099945068359375 seconds.
+- Initial solution found in 0.0009999275207519531 seconds.
 - Starting xs: [0, 5, 8, 12, 15, 0, 5, 8, 11, 15, 18, 0, 4, 7, 10]
 - Starting ys: [0, 0, 0, 0, 0, 18, 18, 18, 18, 18, 18, 27, 27, 27, 27]
 - Starting h: 32
 ------
-- Final solution found in 7.816030263900757 seconds.
-- Final xs: [3, 8, 14, 0, 14, 3, 11, 11, 17, 0, 18, 17, 18, 11, 8]
-- Final ys: [0, 0, 10, 0, 0, 15, 4, 13, 0, 14, 10, 6, 16, 0, 18]
+- Final solution found in 5.507165431976318 seconds.
+- Final xs: [6, 18, 14, 11, 3, 6, 0, 0, 14, 11, 3, 14, 3, 0, 18]
+- Final ys: [0, 0, 0, 7, 11, 15, 12, 4, 15, 0, 0, 11, 6, 0, 18]
 - Optimal h: 21
 
 ============================
@@ -91,9 +91,9 @@ Solving problem .\instances\ins-15.txt.
 - Starting ys: [0, 0, 0, 0, 0, 0, 0, 22, 22, 22, 22, 22, 22, 31, 31, 31]
 - Starting h: 35
 ------
-- Final solution found in 9.163337469100952 seconds.
-- Final xs: [0, 19, 7, 10, 13, 16, 4, 10, 7, 13, 4, 13, 4, 16, 0, 16]
-- Final ys: [0, 0, 0, 0, 10, 7, 7, 13, 14, 0, 0, 4, 17, 18, 19, 4]
+- Final solution found in 8.36564040184021 seconds.
+- Final xs: [0, 13, 7, 4, 10, 19, 10, 4, 7, 16, 16, 16, 16, 19, 0, 19]
+- Final ys: [0, 0, 8, 9, 10, 7, 0, 0, 0, 18, 11, 0, 6, 0, 19, 4]
 - Optimal h: 22
 
 ============================
@@ -105,49 +105,52 @@ Solving problem .\instances\ins-16.txt.
 - Starting ys: [0, 0, 0, 0, 0, 0, 20, 20, 20, 20, 20, 20, 20, 31, 31, 31, 31, 31, 31]
 - Starting h: 36
 ------
-- Final solution found in 31.261916637420654 seconds.
-- Final xs: [6, 16, 19, 13, 9, 20, 3, 0, 13, 0, 9, 16, 3, 3, 9, 0, 16, 9, 3]
-- Final ys: [0, 11, 0, 0, 9, 11, 0, 13, 14, 0, 3, 4, 11, 20, 19, 8, 0, 0, 17]
+- Final solution found in 22.330655574798584 seconds.
+- Final xs: [3, 12, 12, 9, 16, 6, 6, 20, 0, 0, 16, 16, 20, 0, 19, 9, 9, 19, 0]
+- Final ys: [0, 0, 12, 9, 0, 0, 12, 0, 11, 0, 10, 16, 10, 20, 19, 0, 5, 16, 8]
 - Optimal h: 23
 
 ============================
 Solving problem .\instances\ins-17.txt.
 - Max width: 24.
 - Circuits: 18.
-- Initial solution found in 0.0009996891021728516 seconds.
+- Initial solution found in 0.0 seconds.
 - Starting xs: [0, 5, 8, 11, 15, 18, 0, 3, 6, 9, 12, 15, 19, 0, 4, 7, 10, 14]
 - Starting ys: [0, 0, 0, 0, 0, 0, 24, 24, 24, 24, 24, 24, 24, 36, 36, 36, 36, 36]
 - Starting h: 41
 ------
-- Final solution found in 30.98946261405945 seconds.
-- Final xs: [7, 18, 15, 0, 21, 7, 4, 21, 12, 12, 12, 0, 15, 3, 4, 0, 3, 0]
-- Final ys: [0, 0, 6, 0, 0, 16, 0, 14, 0, 16, 9, 15, 0, 20, 15, 20, 12, 12]
+- Final solution found in 21.239123344421387 seconds.
+- Final xs: [7, 21, 18, 3, 12, 7, 15, 12, 0, 0, 0, 3, 18, 3, 15, 15, 3, 15]
+- Final ys: [0, 0, 0, 0, 0, 16, 12, 14, 8, 0, 17, 12, 18, 20, 4, 0, 17, 9]
 - Optimal h: 24
 
 ============================
 Solving problem .\instances\ins-18.txt.
 - Max width: 25.
 - Circuits: 19.
-- Initial solution found in 0.0009996891021728516 seconds.
+- Initial solution found in 0.0 seconds.
 - Starting xs: [0, 3, 6, 9, 13, 16, 19, 22, 0, 3, 7, 10, 13, 16, 20, 0, 6, 9, 12]
 - Starting ys: [0, 0, 0, 0, 0, 0, 0, 0, 25, 25, 25, 25, 25, 25, 25, 35, 35, 35, 35]
 - Starting h: 40
 ------
-- Final solution found in 25.895461082458496 seconds.
-- Final xs: [7, 13, 22, 3, 10, 19, 0, 19, 16, 3, 16, 0, 22, 3, 16, 10, 10, 0, 13]
-- Final ys: [0, 0, 0, 7, 0, 0, 4, 14, 0, 0, 16, 17, 18, 20, 10, 22, 17, 0, 19]
+- Final solution found in 32.023786306381226 seconds.
+- Final xs: [10, 7, 13, 0, 19, 16, 4, 16, 22, 0, 4, 19, 13, 0, 22, 4, 22, 22, 7]
+- Final ys: [0, 6, 7, 0, 0, 11, 3, 0, 15, 13, 16, 17, 0, 20, 9, 0, 4, 0, 3]
 - Optimal h: 25
 
 ============================
 Solving problem .\instances\ins-19.txt.
 - Max width: 26.
 - Circuits: 22.
-- Initial solution found in 0.0 seconds.
+- Initial solution found in 0.0010001659393310547 seconds.
 - Starting xs: [0, 3, 7, 10, 13, 16, 20, 23, 0, 3, 7, 10, 14, 17, 20, 0, 4, 7, 11, 14, 17, 21]
 - Starting ys: [0, 0, 0, 0, 0, 0, 0, 0, 19, 19, 19, 19, 19, 19, 19, 30, 30, 30, 30, 30, 30, 30]
 - Starting h: 36
 ------
-Couldn't reach optimal solution in 300.0158414840698.
+- Final solution found in 60.33108973503113 seconds.
+- Final xs: [10, 16, 3, 0, 23, 6, 13, 13, 20, 16, 0, 6, 3, 20, 20, 6, 23, 16, 23, 10, 6, 10]
+- Final ys: [0, 4, 0, 0, 0, 5, 12, 0, 15, 18, 16, 16, 17, 0, 8, 0, 20, 0, 15, 19, 23, 23]
+- Optimal h: 26
 
 ============================
 Solving problem .\instances\ins-2.txt.
@@ -160,7 +163,7 @@ Solving problem .\instances\ins-2.txt.
 ------
 - Final solution found in 0.0468752384185791 seconds.
 - Final xs: [3, 6, 0, 0, 6]
-- Final ys: [0, 0, 4, 0, 6]
+- Final ys: [0, 0, 0, 5, 6]
 - Optimal h: 9
 
 ============================
@@ -172,9 +175,9 @@ Solving problem .\instances\ins-20.txt.
 - Starting ys: [0, 0, 0, 0, 0, 0, 0, 0, 21, 21, 21, 21, 21, 21, 21, 21, 31, 31, 31, 31, 31]
 - Starting h: 36
 ------
-- Final solution found in 138.7553153038025 seconds.
-- Final xs: [10, 17, 14, 21, 24, 3, 7, 0, 17, 7, 10, 4, 24, 0, 0, 14, 3, 7, 21, 0, 21]
-- Final ys: [0, 8, 6, 0, 0, 9, 15, 16, 0, 5, 20, 0, 19, 0, 9, 0, 23, 0, 23, 6, 20]
+- Final solution found in 49.37454414367676 seconds.
+- Final xs: [3, 10, 24, 0, 14, 17, 21, 7, 10, 21, 17, 7, 14, 17, 3, 24, 6, 21, 0, 6, 0]
+- Final ys: [0, 8, 6, 7, 8, 6, 0, 9, 0, 12, 20, 0, 0, 0, 20, 0, 23, 22, 3, 20, 0]
 - Optimal h: 27
 
 ============================
@@ -186,21 +189,24 @@ Solving problem .\instances\ins-21.txt.
 - Starting ys: [0, 0, 0, 0, 0, 0, 0, 23, 23, 23, 23, 23, 23, 23, 34, 34, 34, 34, 34, 34, 34, 34]
 - Starting h: 41
 ------
-- Final solution found in 124.07625937461853 seconds.
-- Final xs: [0, 22, 7, 12, 15, 19, 25, 7, 15, 18, 4, 7, 4, 25, 12, 0, 4, 15, 22, 25, 18, 4]
-- Final ys: [0, 5, 15, 0, 4, 0, 12, 6, 17, 20, 0, 0, 10, 4, 21, 23, 22, 0, 0, 0, 17, 19]
+- Final solution found in 133.56208491325378 seconds.
+- Final xs: [6, 22, 17, 10, 13, 25, 0, 13, 25, 18, 3, 13, 0, 3, 10, 6, 3, 18, 22, 3, 18, 0]
+- Final ys: [0, 5, 0, 7, 0, 0, 0, 13, 17, 13, 12, 22, 16, 0, 0, 23, 22, 24, 0, 8, 21, 25]
 - Optimal h: 28
 
 ============================
 Solving problem .\instances\ins-22.txt.
 - Max width: 29.
 - Circuits: 24.
-- Initial solution found in 0.002000093460083008 seconds.
+- Initial solution found in 0.0 seconds.
 - Starting xs: [0, 5, 9, 13, 16, 20, 23, 0, 5, 9, 12, 15, 19, 22, 25, 0, 3, 7, 12, 15, 19, 22, 25, 0]
 - Starting ys: [0, 0, 0, 0, 0, 0, 0, 20, 20, 20, 20, 20, 20, 20, 20, 31, 31, 31, 31, 31, 31, 31, 31, 38]
 - Starting h: 41
 ------
-Couldn't reach optimal solution in 300.0069625377655.
+- Final solution found in 187.44176316261292 seconds.
+- Final xs: [4, 19, 0, 16, 9, 26, 23, 11, 16, 13, 13, 0, 23, 4, 9, 26, 7, 4, 20, 0, 23, 26, 7, 20]
+- Final ys: [0, 0, 7, 0, 6, 4, 0, 21, 20, 10, 0, 0, 15, 21, 0, 22, 21, 17, 20, 25, 24, 0, 26, 26]
+- Optimal h: 29
 
 ============================
 Solving problem .\instances\ins-23.txt.
@@ -211,9 +217,9 @@ Solving problem .\instances\ins-23.txt.
 - Starting ys: [0, 0, 0, 0, 0, 0, 0, 30, 30, 30, 30, 30, 30, 30, 30, 30, 41, 41, 41, 41]
 - Starting h: 46
 ------
-- Final solution found in 91.46963882446289 seconds.
-- Final xs: [9, 3, 23, 6, 6, 0, 26, 23, 26, 0, 20, 20, 26, 20, 20, 26, 3, 0, 26, 0]
-- Final ys: [0, 0, 0, 14, 0, 0, 18, 19, 0, 13, 15, 0, 12, 8, 24, 8, 25, 23, 27, 27]
+- Final solution found in 56.06363797187805 seconds.
+- Final xs: [9, 24, 3, 0, 0, 27, 20, 6, 20, 6, 27, 27, 20, 3, 6, 20, 24, 3, 20, 6]
+- Final ys: [0, 0, 11, 0, 16, 0, 0, 19, 22, 9, 13, 22, 16, 4, 0, 9, 25, 0, 13, 6]
 - Optimal h: 30
 
 ============================
@@ -225,21 +231,21 @@ Solving problem .\instances\ins-24.txt.
 - Starting ys: [0, 0, 0, 0, 0, 0, 0, 31, 31, 31, 31, 31, 31, 31, 31, 31, 42, 42, 42]
 - Starting h: 46
 ------
-- Final solution found in 39.23945093154907 seconds.
-- Final xs: [9, 21, 0, 24, 28, 6, 6, 3, 24, 3, 24, 0, 28, 3, 6, 28, 28, 24, 3]
-- Final ys: [0, 0, 0, 15, 0, 0, 19, 20, 0, 10, 8, 22, 23, 0, 13, 18, 14, 28, 7]
+- Final solution found in 40.19808769226074 seconds.
+- Final xs: [9, 24, 6, 27, 0, 21, 21, 3, 27, 0, 27, 6, 3, 3, 21, 3, 0, 27, 0]
+- Final ys: [0, 0, 0, 3, 0, 18, 0, 20, 16, 14, 24, 22, 0, 13, 12, 8, 24, 0, 28]
 - Optimal h: 31
 
 ============================
 Solving problem .\instances\ins-25.txt.
 - Max width: 32.
 - Circuits: 27.
-- Initial solution found in 0.0 seconds.
+- Initial solution found in 0.015625476837158203 seconds.
 - Starting xs: [0, 3, 6, 9, 13, 16, 19, 22, 25, 29, 0, 4, 7, 10, 13, 16, 20, 23, 26, 0, 3, 7, 10, 14, 17, 20, 24]
 - Starting ys: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 27, 27, 27, 27, 27, 27, 27, 27, 27, 40, 40, 40, 40, 40, 40, 40, 40]
 - Starting h: 47
 ------
-Couldn't reach optimal solution in 300.0151255130768.
+Couldn't reach optimal solution in 300.00348019599915.
 
 ============================
 Solving problem .\instances\ins-26.txt.
@@ -250,9 +256,9 @@ Solving problem .\instances\ins-26.txt.
 - Starting ys: [0, 0, 0, 0, 0, 0, 0, 0, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 48, 48, 48, 48, 48]
 - Starting h: 53
 ------
-- Final solution found in 201.8612871170044 seconds.
-- Final xs: [13, 20, 30, 10, 23, 3, 0, 3, 27, 7, 23, 7, 27, 10, 27, 23, 0, 7, 0, 0, 4, 3, 30]
-- Final ys: [0, 0, 0, 9, 10, 16, 16, 4, 18, 0, 0, 20, 0, 0, 10, 27, 9, 14, 0, 4, 0, 30, 30]
+- Final solution found in 185.7923789024353 seconds.
+- Final xs: [11, 24, 27, 18, 0, 4, 8, 7, 21, 30, 0, 21, 4, 18, 30, 0, 30, 4, 7, 21, 30, 4, 27]
+- Final ys: [0, 0, 3, 0, 0, 19, 16, 4, 18, 7, 23, 5, 6, 24, 21, 17, 0, 0, 0, 0, 29, 16, 0]
 - Optimal h: 33
 
 ============================
@@ -264,9 +270,9 @@ Solving problem .\instances\ins-27.txt.
 - Starting ys: [0, 0, 0, 0, 0, 0, 0, 34, 34, 34, 34, 34, 34, 34, 34, 34, 34, 48, 48, 48, 48]
 - Starting h: 53
 ------
-- Final solution found in 117.75294852256775 seconds.
-- Final xs: [3, 24, 15, 18, 21, 27, 30, 31, 0, 18, 27, 0, 15, 0, 21, 27, 21, 27, 31, 31, 0]
-- Final ys: [0, 0, 9, 12, 6, 20, 0, 11, 21, 0, 0, 11, 0, 0, 27, 11, 0, 16, 29, 25, 8]
+- Final solution found in 111.87673616409302 seconds.
+- Final xs: [7, 0, 28, 22, 19, 3, 3, 25, 31, 25, 31, 31, 19, 25, 22, 3, 28, 3, 22, 19, 28]
+- Final ys: [0, 0, 3, 12, 13, 4, 18, 8, 0, 22, 23, 13, 0, 0, 0, 29, 28, 0, 7, 9, 0]
 - Optimal h: 34
 
 ============================
@@ -278,21 +284,24 @@ Solving problem .\instances\ins-28.txt.
 - Starting ys: [0, 0, 0, 0, 0, 0, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 47, 47, 47, 47, 47, 47]
 - Starting h: 53
 ------
-- Final solution found in 262.14800238609314 seconds.
-- Final xs: [8, 28, 0, 4, 22, 25, 31, 28, 4, 22, 0, 32, 32, 4, 25, 0, 32, 4, 25, 25, 0, 22]
-- Final ys: [0, 0, 5, 14, 13, 5, 23, 23, 0, 0, 25, 14, 6, 8, 28, 0, 0, 31, 0, 24, 32, 10]
+- Final solution found in 88.02533102035522 seconds.
+- Final xs: [10, 31, 24, 0, 4, 7, 28, 32, 0, 28, 0, 4, 28, 24, 7, 24, 7, 24, 28, 4, 0, 7]
+- Final ys: [0, 12, 5, 11, 0, 16, 0, 0, 0, 12, 28, 26, 27, 25, 0, 0, 7, 31, 22, 22, 8, 13]
 - Optimal h: 35
 
 ============================
 Solving problem .\instances\ins-29.txt.
 - Max width: 36.
 - Circuits: 23.
-- Initial solution found in 0.0030028820037841797 seconds.
+- Initial solution found in 0.0 seconds.
 - Starting xs: [0, 12, 15, 19, 24, 27, 32, 0, 3, 7, 10, 13, 16, 19, 22, 25, 28, 33, 0, 3, 8, 11, 15]
 - Starting ys: [0, 0, 0, 0, 0, 0, 0, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 51, 51, 51, 51, 51]
 - Starting h: 56
 ------
-Couldn't reach optimal solution in 300.01546812057495.
+- Final solution found in 162.7571108341217 seconds.
+- Final xs: [12, 33, 29, 24, 6, 24, 9, 0, 29, 3, 6, 3, 0, 9, 9, 3, 24, 0, 0, 24, 3, 29, 9]
+- Final ys: [0, 0, 0, 14, 12, 0, 9, 0, 25, 22, 0, 0, 15, 0, 25, 15, 32, 30, 25, 29, 11, 22, 33]
+- Optimal h: 36
 
 ============================
 Solving problem .\instances\ins-3.txt.
@@ -303,9 +312,9 @@ Solving problem .\instances\ins-3.txt.
 - Starting ys: [0, 0, 0, 7, 7, 7]
 - Starting h: 11
 ------
-- Final solution found in 0.031244516372680664 seconds.
-- Final xs: [3, 7, 0, 3, 0, 7]
-- Final ys: [0, 0, 4, 6, 0, 7]
+- Final solution found in 0.06250166893005371 seconds.
+- Final xs: [3, 0, 7, 6, 3, 0]
+- Final ys: [0, 0, 0, 6, 6, 7]
 - Optimal h: 10
 
 ============================
@@ -317,20 +326,20 @@ Solving problem .\instances\ins-30.txt.
 - Starting ys: [0, 0, 0, 0, 0, 0, 0, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 51, 51, 51, 51, 51, 51, 51, 51, 51, 51]
 - Starting h: 58
 ------
-Couldn't reach optimal solution in 300.015118598938.
+Couldn't reach optimal solution in 300.01677560806274.
 
 ============================
 Solving problem .\instances\ins-31.txt.
 - Max width: 38.
 - Circuits: 19.
-- Initial solution found in 0.0 seconds.
+- Initial solution found in 0.002000570297241211 seconds.
 - Starting xs: [0, 24, 28, 32, 0, 4, 7, 10, 14, 17, 20, 23, 27, 30, 34, 0, 3, 6, 10]
 - Starting ys: [0, 0, 0, 0, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 51, 51, 51, 51]
 - Starting h: 56
 ------
-- Final solution found in 28.45328974723816 seconds.
-- Final xs: [7, 0, 34, 34, 34, 31, 31, 0, 4, 4, 4, 0, 31, 0, 4, 4, 31, 0, 31]
-- Final ys: [0, 22, 23, 11, 0, 3, 16, 5, 0, 10, 25, 16, 31, 0, 19, 33, 27, 13, 0]
+- Final solution found in 48.35866165161133 seconds.
+- Final xs: [7, 3, 34, 34, 3, 0, 4, 34, 31, 31, 31, 0, 0, 0, 31, 31, 0, 34, 0]
+- Final ys: [0, 0, 3, 18, 27, 3, 16, 30, 28, 14, 0, 21, 27, 16, 8, 23, 34, 0, 0]
 - Optimal h: 38
 
 ============================
@@ -342,7 +351,7 @@ Solving problem .\instances\ins-32.txt.
 - Starting ys: [0, 0, 0, 0, 0, 0, 39, 39, 39, 39, 39, 39, 39, 39, 39, 39, 54, 54, 54, 54, 54, 54, 54, 54, 54, 54, 62, 62, 62]
 - Starting h: 66
 ------
-Couldn't reach optimal solution in 300.0154142379761.
+Couldn't reach optimal solution in 300.00827383995056.
 
 ============================
 Solving problem .\instances\ins-33.txt.
@@ -353,9 +362,9 @@ Solving problem .\instances\ins-33.txt.
 - Starting ys: [0, 0, 0, 0, 0, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 56, 56, 56, 56]
 - Starting h: 61
 ------
-- Final solution found in 51.0632963180542 seconds.
-- Final xs: [8, 30, 36, 3, 3, 36, 0, 3, 0, 33, 0, 33, 33, 3, 33, 36, 33, 3, 33, 0]
-- Final ys: [0, 0, 4, 24, 12, 26, 24, 4, 3, 26, 15, 18, 0, 0, 12, 0, 7, 37, 36, 0]
+- Final solution found in 97.40540528297424 seconds.
+- Final xs: [9, 37, 0, 4, 4, 0, 34, 4, 31, 31, 34, 31, 34, 4, 31, 0, 34, 4, 31, 34]
+- Final ys: [0, 0, 18, 27, 0, 4, 15, 15, 20, 10, 31, 32, 8, 23, 4, 0, 0, 12, 0, 5]
 - Optimal h: 40
 
 ============================
@@ -367,18 +376,24 @@ Solving problem .\instances\ins-34.txt.
 - Starting ys: [0, 0, 0, 13, 13, 13, 13, 26, 26, 26, 26, 26, 26, 39, 39, 39, 39, 48, 48, 48, 48, 48, 55, 55, 55]
 - Starting h: 57
 ------
-Couldn't reach optimal solution in 300.0232791900635.
+- Final solution found in 68.24215865135193 seconds.
+- Final xs: [0, 6, 2, 8, 12, 12, 7, 10, 0, 0, 10, 6, 5, 12, 2, 13, 2, 7, 0, 4, 10, 5, 8, 2, 0]
+- Final ys: [0, 13, 25, 26, 16, 29, 2, 0, 20, 13, 14, 26, 2, 9, 19, 0, 37, 37, 33, 13, 9, 0, 0, 24, 19]
+- Optimal h: 40
 
 ============================
 Solving problem .\instances\ins-35.txt.
 - Max width: 15.
 - Circuits: 25.
-- Initial solution found in 0.0009996891021728516 seconds.
+- Initial solution found in 0.0 seconds.
 - Starting xs: [0, 4, 11, 0, 5, 9, 0, 4, 9, 12, 0, 2, 7, 9, 11, 0, 4, 6, 10, 13, 0, 2, 4, 5, 8]
 - Starting ys: [0, 0, 0, 26, 26, 26, 37, 37, 37, 37, 48, 48, 48, 48, 48, 59, 59, 59, 59, 59, 65, 65, 65, 65, 65]
 - Starting h: 69
 ------
-Couldn't reach optimal solution in 300.01586294174194.
+- Final solution found in 85.82331657409668 seconds.
+- Final xs: [4, 8, 11, 10, 0, 0, 2, 3, 8, 0, 8, 10, 0, 2, 8, 10, 6, 11, 8, 2, 6, 8, 10, 3, 14]
+- Final ys: [0, 0, 10, 22, 0, 11, 32, 26, 10, 19, 18, 31, 30, 19, 32, 35, 34, 38, 38, 26, 31, 29, 18, 31, 35]
+- Optimal h: 40
 
 ============================
 Solving problem .\instances\ins-36.txt.
@@ -389,40 +404,43 @@ Solving problem .\instances\ins-36.txt.
 - Starting ys: [0, 0, 12, 12, 21, 21, 21, 21, 21, 37, 37, 37, 37, 37, 37, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49]
 - Starting h: 56
 ------
-Couldn't reach optimal solution in 300.01550674438477.
+- Final solution found in 101.92482662200928 seconds.
+- Final xs: [0, 9, 0, 8, 3, 9, 6, 0, 0, 7, 12, 7, 13, 6, 7, 11, 13, 12, 12, 4, 6, 6, 10, 14, 3]
+- Final ys: [0, 5, 31, 17, 15, 24, 30, 12, 22, 5, 35, 0, 28, 17, 24, 0, 0, 24, 28, 12, 24, 12, 0, 24, 12]
+- Optimal h: 40
 
 ============================
 Solving problem .\instances\ins-37.txt.
 - Max width: 30.
 - Circuits: 28.
-- Initial solution found in 0.0 seconds.
+- Initial solution found in 0.0029981136322021484 seconds.
 - Starting xs: [0, 13, 0, 11, 19, 24, 0, 5, 16, 20, 25, 0, 3, 6, 9, 20, 0, 5, 13, 17, 19, 22, 0, 4, 9, 12, 16, 18]
 - Starting ys: [0, 0, 21, 21, 21, 21, 42, 42, 42, 42, 42, 60, 60, 60, 60, 60, 81, 81, 81, 81, 81, 81, 93, 93, 93, 93, 93, 93]
 - Starting h: 99
 ------
-Couldn't reach optimal solution in 300.0150010585785.
+Couldn't reach optimal solution in 300.0070765018463.
 
 ============================
 Solving problem .\instances\ins-38.txt.
 - Max width: 30.
 - Circuits: 29.
-- Initial solution found in 0.015621185302734375 seconds.
+- Initial solution found in 0.0 seconds.
 - Starting xs: [0, 10, 17, 0, 6, 12, 17, 21, 0, 7, 16, 0, 6, 12, 23, 0, 11, 15, 23, 0, 6, 8, 11, 14, 16, 20, 24, 28, 0]
 - Starting ys: [0, 0, 0, 25, 25, 25, 25, 25, 49, 49, 49, 61, 61, 61, 61, 72, 72, 72, 72, 82, 82, 82, 82, 82, 82, 82, 82, 82, 94]
 - Starting h: 95
 ------
-Couldn't reach optimal solution in 300.0159766674042.
+Couldn't reach optimal solution in 300.02809023857117.
 
 ============================
 Solving problem .\instances\ins-39.txt.
 - Max width: 30.
 - Circuits: 28.
-- Initial solution found in 0.0 seconds.
+- Initial solution found in 0.0029993057250976562 seconds.
 - Starting xs: [0, 9, 0, 12, 0, 9, 18, 0, 9, 17, 0, 12, 18, 21, 24, 27, 0, 4, 6, 8, 16, 0, 3, 9, 12, 14, 15, 16]
 - Starting ys: [0, 0, 24, 24, 38, 38, 38, 62, 62, 62, 79, 79, 79, 79, 79, 79, 97, 97, 97, 97, 97, 111, 111, 111, 111, 111, 111, 111]
 - Starting h: 117
 ------
-Couldn't reach optimal solution in 300.02032947540283.
+Couldn't reach optimal solution in 300.005690574646.
 
 ============================
 Solving problem .\instances\ins-4.txt.
@@ -433,21 +451,21 @@ Solving problem .\instances\ins-4.txt.
 - Starting ys: [0, 4, 4, 4, 10, 10, 10]
 - Starting h: 14
 ------
-- Final solution found in 0.09800410270690918 seconds.
+- Final solution found in 0.14062142372131348 seconds.
 - Final xs: [0, 0, 8, 8, 0, 5, 5]
-- Final ys: [0, 4, 0, 6, 8, 4, 8]
+- Final ys: [0, 4, 5, 0, 8, 4, 8]
 - Optimal h: 11
 
 ============================
 Solving problem .\instances\ins-40.txt.
 - Max width: 60.
 - Circuits: 73.
-- Initial solution found in 0.03499889373779297 seconds.
+- Initial solution found in 0.04687356948852539 seconds.
 - Starting xs: [0, 33, 0, 16, 37, 0, 34, 0, 25, 34, 0, 23, 33, 43, 0, 12, 33, 47, 53, 0, 10, 24, 38, 0, 16, 22, 33, 41, 0, 13, 34, 40, 46, 0, 16, 28, 34, 40, 44, 0, 6, 12, 24, 36, 41, 48, 53, 0, 6, 9, 12, 17, 19, 27, 38, 45, 48, 51, 53, 55, 0, 4, 7, 11, 17, 23, 26, 29, 35, 38, 40, 44, 47]
 - Starting ys: [0, 0, 15, 15, 15, 33, 33, 46, 46, 46, 64, 64, 64, 64, 76, 76, 76, 76, 76, 94, 94, 94, 94, 103, 103, 103, 103, 103, 116, 116, 116, 116, 116, 134, 134, 134, 134, 134, 134, 144, 144, 144, 144, 144, 144, 144, 144, 151, 151, 151, 151, 151, 151, 151, 151, 151, 151, 151, 151, 151, 163, 163, 163, 163, 163, 163, 163, 163, 163, 163, 163, 163, 163]
 - Starting h: 168
 ------
-Couldn't reach optimal solution in 300.0172219276428.
+Couldn't reach optimal solution in 300.01150703430176.
 
 ============================
 Solving problem .\instances\ins-5.txt.
@@ -458,9 +476,9 @@ Solving problem .\instances\ins-5.txt.
 - Starting ys: [0, 0, 0, 0, 9, 9, 9, 14]
 - Starting h: 17
 ------
-- Final solution found in 0.20312762260437012 seconds.
-- Final xs: [0, 6, 9, 3, 0, 9, 6, 3]
-- Final ys: [0, 0, 0, 3, 9, 7, 8, 0]
+- Final solution found in 0.2499997615814209 seconds.
+- Final xs: [3, 6, 9, 0, 0, 9, 6, 0]
+- Final ys: [0, 0, 5, 3, 9, 0, 8, 0]
 - Optimal h: 12
 
 ============================
@@ -472,9 +490,9 @@ Solving problem .\instances\ins-6.txt.
 - Starting ys: [0, 0, 0, 8, 8, 8, 8, 14, 14]
 - Starting h: 17
 ------
-- Final solution found in 0.42187976837158203 seconds.
-- Final xs: [3, 10, 0, 0, 3, 10, 7, 6, 3]
-- Final ys: [0, 0, 0, 7, 6, 8, 6, 10, 10]
+- Final solution found in 0.4062490463256836 seconds.
+- Final xs: [0, 7, 0, 10, 3, 7, 10, 3, 10]
+- Final ys: [0, 5, 6, 7, 9, 0, 0, 6, 4]
 - Optimal h: 13
 
 ============================
@@ -486,9 +504,9 @@ Solving problem .\instances\ins-7.txt.
 - Starting ys: [0, 0, 0, 0, 10, 10, 10, 10, 16]
 - Starting h: 19
 ------
-- Final solution found in 0.45311999320983887 seconds.
-- Final xs: [0, 11, 5, 8, 0, 5, 11, 8, 8]
-- Final ys: [0, 0, 6, 0, 10, 0, 9, 10, 7]
+- Final solution found in 0.4687488079071045 seconds.
+- Final xs: [3, 0, 11, 8, 6, 11, 0, 3, 8]
+- Final ys: [0, 5, 0, 0, 10, 8, 0, 10, 7]
 - Optimal h: 14
 
 ============================
@@ -500,9 +518,9 @@ Solving problem .\instances\ins-8.txt.
 - Starting ys: [0, 0, 0, 0, 0, 15, 15, 15, 15, 21]
 - Starting h: 24
 ------
-- Final solution found in 0.6718754768371582 seconds.
-- Final xs: [3, 6, 0, 12, 12, 0, 6, 9, 9, 9]
-- Final ys: [0, 3, 0, 7, 0, 9, 0, 3, 11, 8]
+- Final solution found in 0.9531230926513672 seconds.
+- Final xs: [0, 9, 3, 6, 6, 3, 9, 12, 12, 12]
+- Final ys: [0, 3, 0, 0, 8, 9, 0, 10, 6, 3]
 - Optimal h: 15
 
 ============================
@@ -514,8 +532,8 @@ Solving problem .\instances\ins-9.txt.
 - Starting ys: [0, 0, 0, 12, 12, 12, 12, 12, 20, 20]
 - Starting h: 24
 ------
-- Final solution found in 0.9293453693389893 seconds.
-- Final xs: [3, 10, 0, 3, 13, 7, 0, 13, 10, 13]
+- Final solution found in 0.8281264305114746 seconds.
+- Final xs: [0, 7, 10, 3, 13, 0, 10, 13, 7, 13]
 - Final ys: [0, 0, 0, 9, 5, 9, 10, 0, 12, 13]
 - Optimal h: 16
 
