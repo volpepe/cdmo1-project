@@ -1,6 +1,8 @@
 import argparse
 from solution import parse_solutions_file
 
+# A simple script for visualizing a given solution on screen.
+
 def parse_args():
     args = argparse.ArgumentParser()
     args.add_argument('--solution', '-s',

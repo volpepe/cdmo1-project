@@ -50,6 +50,7 @@ class OptimalVLSI():
         self.add_initial_solution()
 
     def can_rotate(self, circuit):
+        # Checks if a circuit can be rotated or not
         return (self.get_ch(circuit) <= self.W) and (self.get_cw(circuit) <= self.max_h)
 
     def add_main_constraints(self):
@@ -251,20 +252,7 @@ class OptimalVLSI():
         # We have obtained the upper bound for height using the initial solution,
         # so ph at the maximum height is definitely true
         self.s.add(self.ph[self.max_h])
-        # For each circuit, we add the initial positions. We do this by saying that 
-        # when the optimal height is max_h, the solution is the provided one.
-        try:
-            self.s.add(Implies(And(self.ph[self.max_h], Not(self.ph[self.max_h-1])), 
-            And([
-                And([self.px[circ][e] for e in range(
-                    self.init_inst.circuits[circ].x0, self.W
-                )] + [self.py[circ][f] for f in range(
-                    self.init_inst.circuits[circ].y0, self.max_h
-                )])
-                for circ in range(self.n)
-            ])))
-        except KeyError:
-            pass
+
 
     def obtain_solution(self, verbose=False):
         # If SAT, construct the solution
@@ -276,6 +264,8 @@ class OptimalVLSI():
         true_vars = [var for var in assignments if is_true(m[var])]
         if verbose:
             print(true_vars)
+        # Get the variable with the smallest index out of those referring
+        # to the same circuit.
         assignments_x = [min([int(str(var).split('_')[-1])
                 for var in true_vars 
                 if re.match(f'px_{circ}_', str(var))]
@@ -292,11 +282,13 @@ class OptimalVLSI():
         if verbose:
             print(assignments_x, assignments_y, rotations)
             print("Solution h: {}".format(sol_h))
+        # Instantiate a solution object
         solution = RotatingSolutionInstance(
             self.inst.wg, sol_h, self.n,
             [ Circuit(self.get_cw(i), self.get_ch(i), assignments_x[i], assignments_y[i]) 
                 for i in range(self.n) ]
         )
+        # Fix rotated widths and heights 
         solution.fix_circuits_rotation(
             widths=[self.get_cw(circ) if not circ in rotations
                 else self.get_ch(circ) 
@@ -346,7 +338,6 @@ class OptimalVLSI():
     def solve_optimally_no_assumptions(self, max_sol_time:int=60*5, draw_best=False):
         # Same as self.solve_optimally, but we don't try to solve for the lower bound at the beginning,
         # so we have to go through the whole bisection algorithm to reach it.
-        # This is mostly to test that the bisection algorithm is working properly.
         max_h = self.max_h
         low_h = self.low_h
         self.s.set(timeout=max_sol_time*1000) # In milliseconds
@@ -378,7 +369,9 @@ class OptimalVLSI():
                 solution.draw()
             return solution
 
-    def solve_optimally(self, max_sol_time:int=60*5, draw_best=False):
+    def solve_optimally_fast(self, max_sol_time:int=60*5, draw_best=False):
+        # We solve the problem faster by assuming that the initial height is the lowh 
+        # (because it's true for all(?) provided instances, but not true in general)
         max_h = self.max_h
         low_h = self.low_h
         # In our algorithm we might have to use the solver multiple time, 
@@ -425,15 +418,19 @@ class OptimalVLSI():
                     solution.draw()
                 return solution
 
-    def get_cw(self, circ:int):
+    def get_cw(self, circ:int) -> int:
+        # Returns width of a circuit according to the one defined
+        # in the instance of the problem
         return self.inst.circuits[circ].w
 
-    def get_ch(self, circ:int):
+    def get_ch(self, circ:int) -> int:
+        # Returns height of a circuit according to the one defined
+        # in the instance of the problem
         return self.inst.circuits[circ].h
 
 
-if __name__ == '__main__':    
-    for i in range(35, 40):
+if __name__ == '__main__':
+    for i in range(1, 20):
         print(f"Solving instance {i}")
         inst = parse_problem_file(f'instances/ins-{i}.txt')
         problem = OptimalVLSI(inst)

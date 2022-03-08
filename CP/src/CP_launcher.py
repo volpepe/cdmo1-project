@@ -23,7 +23,7 @@ def parse_args():
         default='gecode')
     argpars.add_argument("--problems", "-p", type=str,
         help="Pattern to gather all instances to be solved",
-        default=os.path.join("instances", "ins-1.txt"))
+        default=os.path.join("instances", "ins-*.txt"))
     argpars.add_argument("--output_dir", '-odir', type=str,
         help="Where to create the sequence of output files",
         default=os.path.join("CP", "out"))

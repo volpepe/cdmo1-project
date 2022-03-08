@@ -1,5 +1,7 @@
 from typing import List, Sequence
 
+# A high level class containing utility methods and variables for representing a problem instance.
+
 class IncompleteCircuit():
 
     def __init__(self, w:int, h:int) -> None:

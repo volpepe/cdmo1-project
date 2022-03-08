@@ -3,6 +3,8 @@ import glob
 from typing import Sequence
 from problem import ProblemInstance, parse_problem_file
 
+# General utils for all launchers
+
 class SubOptimalException(Exception):
     pass
 

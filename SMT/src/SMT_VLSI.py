@@ -43,7 +43,8 @@ class OptimalVLSI():
             'duration_model': 0.0,
             'duration_solution_creation': 0.0
         }
-        # Solver for the problem
+        # Solver for the problem. This time it's an optimization problem
+        # and we have to minimize the value of variable h.
         self.opt = Optimize()
         self.add_main_constraints()
         self.opt.minimize(self.h)
@@ -108,6 +109,7 @@ class OptimalVLSI():
             self.durations['duration_model'] = time.time() - start_model
             if verbose:
                 print(sol)
+            # Obtain assignments from the model by filtering on variable names
             assignments_x = [int(sol[var].as_long()) 
                 for circ in range(self.n)
                 for var in sol if re.match(f'x_{circ}$', str(var)) ]
@@ -148,9 +150,13 @@ class OptimalVLSI():
             return None
 
     def get_cw(self, circ:int):
+        # Returns width of a circuit according to the one defined
+        # in the instance of the problem
         return self.inst.circuits[circ].w
 
     def get_ch(self, circ:int):
+        # Returns height of a circuit according to the one defined
+        # in the instance of the problem
         return self.inst.circuits[circ].h
 
 if __name__ == '__main__':    

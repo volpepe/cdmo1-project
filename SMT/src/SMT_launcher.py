@@ -89,6 +89,7 @@ if __name__ == '__main__':
             if args.show:
                 solution.draw()
         except SubOptimalException:
+            # If suboptimal, ignore instance
             pass
 
     # Close log file

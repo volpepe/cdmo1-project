@@ -1,6 +1,7 @@
 from problem import ProblemInstance
 from solution import SolutionInstance
 
+# A simple log writer
 
 class Summary():
     def __init__(self, filename:str) -> None:

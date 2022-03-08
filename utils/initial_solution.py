@@ -3,6 +3,9 @@ import argparse
 from solution import SolutionInstance, Circuit
 from problem import ProblemInstance
 
+# This script contains the code for obtaining an initial solution with the algorithm
+# described in the CP report.
+
 def parse_args():
     argpars = argparse.ArgumentParser()
     argpars.add_argument("--problem", "-p", type=str,

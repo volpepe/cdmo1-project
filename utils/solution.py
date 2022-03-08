@@ -6,6 +6,9 @@ from matplotlib.ticker import MultipleLocator
 import numpy as np
 from problem import IncompleteCircuit, ProblemInstance
 
+# A high level class containing utility methods and variables for representing a solution
+# to a problem, writing it on file, displaying it graphically, etc.
+
 class Circuit(IncompleteCircuit):
 
     def __init__(self,
