@@ -1,10 +1,20 @@
 # cdmo1-project
 
-This repository contains the code for the **Combinatorial Optimization and Decision Making - Module 1** exam for the *Artificial Intelligence* master course @UniBo. The project is developed by **Federico Cichetti**.
+This repository contains the code for the **Combinatorial Optimization and Decision Making - Module 1** exam for the *Artificial Intelligence* master course @UniBo. The project was developed by **Federico Cichetti** ([federico.cichetti@studio.unibo.it](mailto:federico.cichetti@studio.unibo.it)).
 
-The project's description can be found in the [CDMO_Project_2021.pdf](CDMO_Project_2021.pdf) document.
+The problem description can be found in [CDMO_Project_2021.pdf](CDMO_Project_2021.pdf).
 
 ## Structure of the project
+
+For this project we implemented 5 models: 2 for constraint programming (normal and rotation), 2 for SAT (normal and rotation) and 1 for SMT (normal). 
+
+SAT and SMT solutions were modelled using the [Z3 solver](https://github.com/Z3Prover/z3) from Microsoft Research (in particular, its Python interface), while the CP solution was built using the [MiniZinc](https://www.minizinc.org/) constraint modelling language. 
+
+The models are grouped by category: the CP models can be found in the `CP` directory, the SAT models are in the `SAT` directory and the SMT model is in the `SMT` directory. Each directory has an `out` folder containing logs of the results of our experiments, and a `src` folder containing the source code. The `src` folders also contain README files with instructions for reproducing our experiments.
+
+The reports for the project can be found in each group's folder: [CP Report](CP/Report_CP.pdf), [SAT Report](SAT/Report_SAT.pdf), [SMT Report](SMT/Report_SMT.pdf).
+
+The full structure tree is shown below:
 
 ```
 |-CP                                // Implementation of the CP model
@@ -54,3 +64,21 @@ The project's description can be found in the [CDMO_Project_2021.pdf](CDMO_Proje
 |- README.md                        // This file
 |- requirements.txt                 // The pip packages that are required for the code execution
 ```
+
+## Results
+
+Here, we provide an overview of the results we obtained with our different models. In general, we managed to solve over 30 instances within the 5 minutes mark with all models. Allowing rotations requires a longer search, therefore we can observe a gap in the number of solved instances. 
+
+| Model     | Solved Instances | Average time for solved solutions |
+| :---      | :--------------: | :-----------: |
+|  CP       |        31        |    8.21 s     |
+| CP (rot.) |        20        |    16.13 s    |
+|  SAT      |        35        |    7.40 s     |
+| SAT (rot.)|        21        |    29.31 s    |
+|  SMT      |        33        |    48.14 s    |
+
+The results for each model are detailed at the end of the corresponding reports.
+
+## Citations
+
+The SAT model is an implementation of the paper "[A SAT-based Method for Solving the Two-dimensional Strip Packing Problem](https://www.researchgate.net/publication/220445013_A_SAT-based_Method_for_Solving_the_Two-dimensional_Strip_Packing_Problem)" by Soh et al, although we added some of our own original ideas and designed the rotation extension.
