@@ -29,11 +29,11 @@ class OptimalVLSI():
         self.low_h = math.floor(sum([self.get_ch(circ)*self.get_cw(circ) 
             for circ in range(self.n)]) / self.W)
         self.max_h = max([circ.y0 + circ.h for circ in self.init_inst.circuits])
-        # Boolean variables for our problem
+        # Variables for our problem
         self.cx = [Int(f'x_{circ}') for circ in range(self.n)]
         self.cy = [Int(f'y_{circ}') for circ in range(self.n)]
-        self.cw = [self.get_cw(circ) for circ in range(self.n)]
-        self.ch = [self.get_ch(circ) for circ in range(self.n)]
+        self.cw = [self.get_cw(circ) for circ in range(self.n)] # Constants
+        self.ch = [self.get_ch(circ) for circ in range(self.n)] # Constants
         self.transl_pos = [Int(f'tr_{circ}') for circ in range(self.n)]
         self.h = Int(f'h')
         # Variable to keep all kinds of times into check
@@ -50,9 +50,8 @@ class OptimalVLSI():
         self.opt.minimize(self.h)
 
     def add_main_constraints(self):
-        # For each circuit, there must be at least a px and a py variable
-        # that is true such that the circuit is not placed out of bounds. 
-        # Furthermore, we must pose the ordering integrity constraint
+        # For each circuit, we constrain their x and y positions to be in bounds.
+        # Also, we add the channelling constraint with the dual view.
         for circ in range(self.n):
             self.opt.add(And(0 <= self.cx[circ], self.cx[circ] <= self.W - self.cw[circ]))
             self.opt.add(And(0 <= self.cy[circ], self.cy[circ] <= self.h - self.ch[circ]))
@@ -63,7 +62,7 @@ class OptimalVLSI():
 
         # All translated positions must be different
         self.opt.add(Distinct(self.transl_pos))
-        # One circuit must be at 0
+        # Exactly one circuit must be at (0,0), which is the translated position 0.
         exactly_one(self.opt, [self.transl_pos[circ] == 0 for circ in range(self.n)])
 
         # Constraints on pairs of circuits
@@ -76,11 +75,11 @@ class OptimalVLSI():
                 self.cy[cj] + self.ch[cj] <= self.cy[ci]
             ))
 
-        # Cumulative constraint
+        # Cumulative constraint (implicit constraint, but should enforce the bounds)
         self.opt.add(cumulative_z3(self.cy, self.ch, self.cw, self.W, 0, self.max_h))
         self.opt.add(cumulative_z3(self.cx, self.cw, self.ch, self.h, 0, self.W))
         
-        ## Symmetry breaking
+        ## Symmetry breaking constraints
         self.opt.add([
             lex_leq_z3(self.transl_pos, [self.cy[c]*self.W+
                                         (self.W-self.cx[c]-self.cw[c]) 
@@ -105,7 +104,7 @@ class OptimalVLSI():
         if check == sat:
             # If SAT, obtain the variable values and construct the solution object
             start_model = time.time()
-            sol = self.opt.model()
+            sol = self.opt.model()  # Here we obtain all the assignments
             self.durations['duration_model'] = time.time() - start_model
             if verbose:
                 print(sol)
@@ -122,6 +121,7 @@ class OptimalVLSI():
             if verbose:
                 print(assignments_x, assignments_y)
                 print("Solution h: {}".format(sol_h))
+            # Create the SolutionInstance with the computed positions
             solution = SolutionInstance(
                 self.W, sol_h, self.n,
                 [ Circuit(self.get_cw(i), self.get_ch(i), assignments_x[i], assignments_y[i]) 
@@ -138,6 +138,7 @@ class OptimalVLSI():
         # Set solver timeout
         self.opt.set(timeout=max_sol_time*1000)
         start_sol_time = time.time()
+        # Compute the solution of the problem
         status, solution = self.obtain_solution(verbose=False)
         self.durations['duration_solution_creation'] = time.time() - start_sol_time
         # If it's SAT, we have an optimal solution
@@ -145,6 +146,7 @@ class OptimalVLSI():
             if draw_best:
                 solution.draw()
             return solution
+        # Otherwise, we have failed to solve the instance
         else:
             print(f"Failed to solve")
             return None
