@@ -434,7 +434,7 @@ if __name__ == '__main__':
         print(f"Solving instance {i}")
         inst = parse_problem_file(f'instances/ins-{i}.txt')
         problem = OptimalVLSI(inst)
-        solution = problem.solve_optimally(draw_best=True)
+        solution = problem.solve_optimally_no_assumptions(draw_best=True)
         print("Durations for solving:")
         print(problem.durations)
         print("Total solving time (algorithm overhead not counted): {} seconds".\
